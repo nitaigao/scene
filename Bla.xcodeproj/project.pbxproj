@@ -13,6 +13,8 @@
 		4C59AA1A136B4C7200C4F13D /* shader.vert in Sources */ = {isa = PBXBuildFile; fileRef = 4C59AA18136B4C7200C4F13D /* shader.vert */; };
 		4C59AA1F136B4D7D00C4F13D /* shader.frag in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4C59AA17136B4C7200C4F13D /* shader.frag */; };
 		4C59AA20136B4D7D00C4F13D /* shader.vert in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4C59AA18136B4C7200C4F13D /* shader.vert */; };
+		4C8058AC136D45C2008CBAFE /* DAEImporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C8058AA136D45C2008CBAFE /* DAEImporter.cpp */; };
+		4C8058B0136D4653008CBAFE /* Batch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C8058AE136D4653008CBAFE /* Batch.cpp */; };
 		4CB113F5136AEBEF00612D7F /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CB113F4136AEBEF00612D7F /* main.cpp */; };
 		4CB113FD136AEBFD00612D7F /* Collada14Dom.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CB113FC136AEBFD00612D7F /* Collada14Dom.framework */; };
 /* End PBXBuildFile section */
@@ -36,6 +38,10 @@
 		4C59A93D136B4A8900C4F13D /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		4C59AA17136B4C7200C4F13D /* shader.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = shader.frag; path = Bla/shader.frag; sourceTree = "<group>"; };
 		4C59AA18136B4C7200C4F13D /* shader.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = shader.vert; path = Bla/shader.vert; sourceTree = "<group>"; };
+		4C8058AA136D45C2008CBAFE /* DAEImporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DAEImporter.cpp; sourceTree = "<group>"; };
+		4C8058AB136D45C2008CBAFE /* DAEImporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DAEImporter.h; sourceTree = "<group>"; };
+		4C8058AE136D4653008CBAFE /* Batch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Batch.cpp; sourceTree = "<group>"; };
+		4C8058AF136D4653008CBAFE /* Batch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Batch.h; sourceTree = "<group>"; };
 		4CB113F0136AEBEF00612D7F /* Bla */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Bla; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CB113F4136AEBEF00612D7F /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		4CB113F6136AEBEF00612D7F /* Bla.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = Bla.1; sourceTree = "<group>"; };
@@ -92,6 +98,10 @@
 			children = (
 				4CB113F4136AEBEF00612D7F /* main.cpp */,
 				4CB113F6136AEBEF00612D7F /* Bla.1 */,
+				4C8058AA136D45C2008CBAFE /* DAEImporter.cpp */,
+				4C8058AB136D45C2008CBAFE /* DAEImporter.h */,
+				4C8058AE136D4653008CBAFE /* Batch.cpp */,
+				4C8058AF136D4653008CBAFE /* Batch.h */,
 			);
 			path = Bla;
 			sourceTree = "<group>";
@@ -146,6 +156,8 @@
 				4CB113F5136AEBEF00612D7F /* main.cpp in Sources */,
 				4C59AA19136B4C7200C4F13D /* shader.frag in Sources */,
 				4C59AA1A136B4C7200C4F13D /* shader.vert in Sources */,
+				4C8058AC136D45C2008CBAFE /* DAEImporter.cpp in Sources */,
+				4C8058B0136D4653008CBAFE /* Batch.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
