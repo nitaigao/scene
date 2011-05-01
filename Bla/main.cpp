@@ -23,16 +23,43 @@ float rotY;
 typedef std::vector<Batch*> BatchList;
 BatchList batches;
 
+#include <libjson/libjson.h>
+#include <libjson/Source/JSONDefs.h>
+
+class Scene {
+  
+public:
+  
+  void load(const std::string& path) {
+    
+    
+
+//    JSONNode n = libjson::parse(json);
+    
+    
+    
+  }
+  
+  void render() {
+    
+  };
+  
+};
+
+Scene scene;
+
 void render() { 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  
+  glm::mat4 projection = glm::perspective(75.0f, float(WINDOW_X) / float(WINDOW_Y), 0.5f, 100.f);
   
   glm::mat4 eyeRotationY = glm::rotate(glm::mat4(1.0f), rotY, glm::vec3(1.0f, 0.0f, 0.0f));
   glm::mat4 eyeRotationX = glm::rotate(eyeRotationY, rotX, glm::vec3(0.0f, 1.0f, 0.0f));
   glm::mat4 eyeTranslation = glm::translate(eyeRotationX, glm::vec3(0.0f + movX, -2.0f + movY, -2.0f + movZ));
-
+  
   
   for (BatchList::iterator i = batches.begin(); i != batches.end(); ++i) {
-    (*i)->render(eyeTranslation);
+    (*i)->render(eyeTranslation, projection);
   }
   
   glutSwapBuffers();
@@ -50,10 +77,6 @@ void update() {
 int lastX = 0;
 int lastY = 0;
 bool firstInputPass = true;
-
-void resetMouse() {
-  glutWarpPointer(WINDOW_X / 2, WINDOW_Y / 2);
-}
 
 void passiveMotion(int x, int y) {
   if (!firstInputPass) {
@@ -101,10 +124,7 @@ void keyboard(unsigned char key, int x, int y) {
   if (key == 'd') {
     movX -= 0.1f;
   }
-  
-  
 }
-
 
 int main(int argc, char **argv) {
   glutInit(&argc, argv);
@@ -118,7 +138,7 @@ int main(int argc, char **argv) {
   glutPassiveMotionFunc(passiveMotion);
   
   glutSetCursor (GLUT_CURSOR_NONE);
-  resetMouse();
+  glutWarpPointer(WINDOW_X / 2, WINDOW_Y / 2);
   
   glEnable(GL_TEXTURE_2D);
   glEnable(GL_DEPTH_TEST); 
@@ -126,11 +146,14 @@ int main(int argc, char **argv) {
   
   glClearColor(0.39,0.584,0.923,1.0);
   
-  Batch* batch1 = DAEImporter::load_dae("/Users/NK/Desktop/court.dae");
-  batches.push_back(batch1);
+  scene.load("scene.json");
   
-  Batch* batch2 = DAEImporter::load_dae("/Users/NK/Desktop/box.dae");
-  batches.push_back(batch2);
+  
+//  Batch* batch1 = DAEImporter::load_dae("/Users/NK/Desktop/court.dae");
+//  batches.push_back(batch1);
+//  
+//  Batch* batch2 = DAEImporter::load_dae("/Users/NK/Desktop/box.dae");
+//  batches.push_back(batch2);
   
   glutMainLoop();
   

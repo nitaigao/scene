@@ -16,15 +16,12 @@
 #include "glm/gtc/matrix_inverse.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-#define WINDOW_X 800
-#define WINDOW_Y 600
-
 class Batch {
   
   enum {
     VERTEX,
     NORMAL
-  };
+  } BufferAttribs;
   
   std::vector<float> vertices;
   std::vector<float> normals;
@@ -34,36 +31,31 @@ class Batch {
   glm::vec4 color_;
   
   GLuint vertexArrayObject;
-  GLuint vertexBufferObject;
-  GLuint normalBufferObject;
-  
-  GLuint shaderVert;
-  GLuint shaderFrag;
   GLuint shaderProg;
   
 public:
   
-  void setScale(float x, float y, float z) {
+  inline void setScale(float x, float y, float z) {
     scale_.x = x;
     scale_.y = y;
     scale_.z = z;
   }
   
-  void addVertex(float x, float y, float z) {
+  inline void addVertex(float x, float y, float z) {
     vertices.push_back(x);
     vertices.push_back(y);
     vertices.push_back(z);
     indices++;
   }
   
-  void addNormal(float x, float y, float z) {
+  inline void addNormal(float x, float y, float z) {
     
     normals.push_back(x);
     normals.push_back(y);
     normals.push_back(z);    
   }
   
-  void setDiffuse(float r, float g, float b, float a) {
+  inline void setDiffuse(float r, float g, float b, float a) {
     color_.r = r;
     color_.g = g;
     color_.b = b;
@@ -73,6 +65,10 @@ public:
   void finalize() {
     glGenVertexArraysAPPLE(1, &vertexArrayObject);
     glBindVertexArrayAPPLE(vertexArrayObject);
+    
+    GLuint vertexBufferObject;
+    GLuint normalBufferObject;
+
     
     glGenBuffers(1, &vertexBufferObject);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
@@ -107,7 +103,7 @@ public:
     shaderProg = glCreateProgram();
     GLint testVal;
     
-    shaderVert = glCreateShader(GL_VERTEX_SHADER);  
+    GLuint shaderVert = glCreateShader(GL_VERTEX_SHADER);  
     std::string vertSrc = readFile("shader.vert");  
     GLchar *pVertSrc = (GLchar *)vertSrc.c_str();
     glShaderSource(shaderVert, 1, (const GLchar**)&pVertSrc, NULL);
@@ -122,7 +118,7 @@ public:
     }
     glAttachShader(shaderProg, shaderVert);
     
-    shaderFrag = glCreateShader(GL_FRAGMENT_SHADER);  
+    GLuint shaderFrag = glCreateShader(GL_FRAGMENT_SHADER);  
     std::string fragSrc = readFile("shader.frag");
     GLchar *pFragSrc = (GLchar *)fragSrc.c_str();
     glShaderSource(shaderFrag, 1, (const GLchar**)&pFragSrc, NULL);
@@ -150,16 +146,13 @@ public:
     }
   }
 
-  
-  void render(const glm::mat4& modelViewMatrix) {
+  void render(const glm::mat4& modelViewMatrix, const glm::mat4& projectionMatrix) {
     glUseProgram(shaderProg);
-    
-    glm::mat4 projection = glm::perspective(75.0f, float(WINDOW_X) / float(WINDOW_Y), 0.5f, 100.f);
-    
+        
     glm::mat4 scale = glm::scale(modelViewMatrix, scale_);
     glm::mat4 rotation = glm::rotate(scale, 0.0f, glm::vec3(0.0, 1.0, 0.0));
     glm::mat4 mv(rotation);
-    glm::mat4 mvp = projection * mv;
+    glm::mat4 mvp = projectionMatrix * mv;
     
     GLint uniformMVMatrix = glGetUniformLocation(shaderProg, "mvMatrix");
     glUniformMatrix4fv(uniformMVMatrix, 1, GL_FALSE, glm::value_ptr(mv));

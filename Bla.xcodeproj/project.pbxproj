@@ -34,6 +34,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4C3C297D136D65FF00DA1AD7 /* elements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = elements.h; sourceTree = "<group>"; };
+		4C3C297E136D65FF00DA1AD7 /* elements.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = elements.inl; sourceTree = "<group>"; };
+		4C3C297F136D65FF00DA1AD7 /* reader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = reader.h; sourceTree = "<group>"; };
+		4C3C2980136D65FF00DA1AD7 /* reader.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = reader.inl; sourceTree = "<group>"; };
+		4C3C2981136D65FF00DA1AD7 /* visitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = visitor.h; sourceTree = "<group>"; };
+		4C3C2982136D65FF00DA1AD7 /* writer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = writer.h; sourceTree = "<group>"; };
+		4C3C2983136D65FF00DA1AD7 /* writer.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = writer.inl; sourceTree = "<group>"; };
+		4C3C2984136D670200DA1AD7 /* scene.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = scene.json; path = Bla/scene.json; sourceTree = "<group>"; };
 		4C59A93B136B4A6C00C4F13D /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		4C59A93D136B4A8900C4F13D /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		4C59AA17136B4C7200C4F13D /* shader.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = shader.frag; path = Bla/shader.frag; sourceTree = "<group>"; };
@@ -63,9 +71,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4C3C297C136D65FF00DA1AD7 /* json */ = {
+			isa = PBXGroup;
+			children = (
+				4C3C297D136D65FF00DA1AD7 /* elements.h */,
+				4C3C297E136D65FF00DA1AD7 /* elements.inl */,
+				4C3C297F136D65FF00DA1AD7 /* reader.h */,
+				4C3C2980136D65FF00DA1AD7 /* reader.inl */,
+				4C3C2981136D65FF00DA1AD7 /* visitor.h */,
+				4C3C2982136D65FF00DA1AD7 /* writer.h */,
+				4C3C2983136D65FF00DA1AD7 /* writer.inl */,
+			);
+			path = json;
+			sourceTree = "<group>";
+		};
 		4C59AA1E136B4D6500C4F13D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				4C3C2984136D670200DA1AD7 /* scene.json */,
 				4C59AA17136B4C7200C4F13D /* shader.frag */,
 				4C59AA18136B4C7200C4F13D /* shader.vert */,
 			);
@@ -96,6 +119,7 @@
 		4CB113F3136AEBEF00612D7F /* Bla */ = {
 			isa = PBXGroup;
 			children = (
+				4C3C297C136D65FF00DA1AD7 /* json */,
 				4CB113F4136AEBEF00612D7F /* main.cpp */,
 				4CB113F6136AEBEF00612D7F /* Bla.1 */,
 				4C8058AA136D45C2008CBAFE /* DAEImporter.cpp */,
@@ -212,6 +236,7 @@
 				OTHER_LDFLAGS = (
 					"-lboost_filesystem-mt",
 					"-lboost_system-mt",
+					"-ljson",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALID_ARCHS = i386;
@@ -234,6 +259,7 @@
 				OTHER_LDFLAGS = (
 					"-lboost_filesystem-mt",
 					"-lboost_system-mt",
+					"-ljson",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALID_ARCHS = i386;
