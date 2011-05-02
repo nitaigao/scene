@@ -10,6 +10,7 @@
 		4C3B13B3136E927C00DEDB35 /* box.dae in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4C3B13B1136E927000DEDB35 /* box.dae */; };
 		4C3B13B4136E927C00DEDB35 /* court.dae in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4C3B13B2136E927000DEDB35 /* court.dae */; };
 		4C3B13B6136E95F300DEDB35 /* scene.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4C3B13B5136E95DF00DEDB35 /* scene.json */; };
+		4C3B13B8136EA0F800DEDB35 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C3B13B7136EA0F800DEDB35 /* ApplicationServices.framework */; };
 		4C59A93C136B4A6C00C4F13D /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C59A93B136B4A6C00C4F13D /* GLUT.framework */; };
 		4C59A93E136B4A8900C4F13D /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C59A93D136B4A8900C4F13D /* OpenGL.framework */; };
 		4C59AA19136B4C7200C4F13D /* shader.frag in Sources */ = {isa = PBXBuildFile; fileRef = 4C59AA17136B4C7200C4F13D /* shader.frag */; };
@@ -44,6 +45,7 @@
 		4C3B13B1136E927000DEDB35 /* box.dae */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = box.dae; path = Bla/box.dae; sourceTree = "<group>"; };
 		4C3B13B2136E927000DEDB35 /* court.dae */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = court.dae; path = Bla/court.dae; sourceTree = "<group>"; };
 		4C3B13B5136E95DF00DEDB35 /* scene.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = scene.json; path = Bla/scene.json; sourceTree = "<group>"; };
+		4C3B13B7136EA0F800DEDB35 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
 		4C3C297D136D65FF00DA1AD7 /* elements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = elements.h; sourceTree = "<group>"; };
 		4C3C297E136D65FF00DA1AD7 /* elements.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = elements.inl; sourceTree = "<group>"; };
 		4C3C297F136D65FF00DA1AD7 /* reader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = reader.h; sourceTree = "<group>"; };
@@ -71,6 +73,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C3B13B8136EA0F800DEDB35 /* ApplicationServices.framework in Frameworks */,
 				4C59A93E136B4A8900C4F13D /* OpenGL.framework in Frameworks */,
 				4C59A93C136B4A6C00C4F13D /* GLUT.framework in Frameworks */,
 				4CB113FD136AEBFD00612D7F /* Collada14Dom.framework in Frameworks */,
@@ -109,6 +112,7 @@
 		4CB113E5136AEBEF00612D7F = {
 			isa = PBXGroup;
 			children = (
+				4C3B13B7136EA0F800DEDB35 /* ApplicationServices.framework */,
 				4C59AA1E136B4D6500C4F13D /* Resources */,
 				4C59A93D136B4A8900C4F13D /* OpenGL.framework */,
 				4C59A93B136B4A6C00C4F13D /* GLUT.framework */,

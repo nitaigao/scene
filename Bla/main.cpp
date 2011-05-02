@@ -2,6 +2,7 @@
 #include <vector>
 
 #include <GLUT/GLUT.h>
+#include <ApplicationServices/ApplicationServices.h>
 
 #include "glm/glm.hpp" // glm::vec3, glm::vec4, glm::ivec4, glm::mat4
 
@@ -9,8 +10,8 @@
 #include "DAEImporter.h"
 #include "io.h"
 
-#define WINDOW_X 800
-#define WINDOW_Y 600
+#define WINDOW_X 1280
+#define WINDOW_Y 800
 
 struct timeval _tstart, _tend;
 
@@ -128,6 +129,7 @@ void render() {
     
   glutSwapBuffers();
   glutPostRedisplay();
+  
 }
 
 void update() {
@@ -155,6 +157,21 @@ void passiveMotion(int x, int y) {
   lastY = y;
   
   firstInputPass = false;
+  
+  if (x <= 10 || x >= 800) {
+    glutPassiveMotionFunc(0);
+    glutWarpPointer(100, y);
+    glutPassiveMotionFunc(passiveMotion);
+    firstInputPass = true;
+  }
+  
+  if (y <= 10 || y >= 500) {
+    glutPassiveMotionFunc(0);
+    glutWarpPointer(x, 100);
+    glutPassiveMotionFunc(passiveMotion);
+    firstInputPass = true;
+  }
+
 }
 
 void reshape(int w, int h) {
@@ -191,6 +208,9 @@ void keyboard(unsigned char key, int x, int y) {
 }
 
 int main(int argc, char **argv) {
+  
+  CGSetLocalEventsSuppressionInterval(0.0);
+
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_RGBA | GLUT_SINGLE);
   glutInitWindowSize(WINDOW_X, WINDOW_Y);
@@ -202,14 +222,14 @@ int main(int argc, char **argv) {
   glutPassiveMotionFunc(passiveMotion);
   
   glutSetCursor (GLUT_CURSOR_NONE);
-  glutWarpPointer(WINDOW_X / 2, WINDOW_Y / 2);
+//  glutWarpPointer(WINDOW_X / 2, WINDOW_Y / 2);
   
   glEnable(GL_TEXTURE_2D);
   glEnable(GL_DEPTH_TEST); 
   glEnable(GL_CULL_FACE);
   
   glClearColor(0.39,0.584,0.923,1.0);
-  
+    
   scene.load("scene.json"); 
   
   glutMainLoop();

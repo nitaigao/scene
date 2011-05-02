@@ -14,5 +14,21 @@
             "y": 0,
             "z": -5
         }
+    },
+    {
+        "model": "box.dae",
+        "position": {
+            "x": 2,
+            "y": 0,
+            "z": -7
+        }
+    },
+    {
+        "model": "box.dae",
+        "position": {
+            "x": -5,
+            "y": 0,
+            "z": -9
+        }
     }]
 }
