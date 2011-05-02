@@ -158,16 +158,16 @@ void passiveMotion(int x, int y) {
   
   firstInputPass = false;
   
-  if (x <= 10 || x >= 800) {
+  if (x <= (WINDOW_X / 2) - 10 || x >= (WINDOW_X / 2) + 10) {
     glutPassiveMotionFunc(0);
-    glutWarpPointer(100, y);
+    glutWarpPointer(WINDOW_X / 2, y);
     glutPassiveMotionFunc(passiveMotion);
     firstInputPass = true;
   }
   
-  if (y <= 10 || y >= 500) {
+  if (y <= (WINDOW_Y / 2) - 10 || y >= (WINDOW_Y / 2) + 10) {
     glutPassiveMotionFunc(0);
-    glutWarpPointer(x, 100);
+    glutWarpPointer(x, WINDOW_Y / 2);
     glutPassiveMotionFunc(passiveMotion);
     firstInputPass = true;
   }
@@ -208,7 +208,7 @@ void keyboard(unsigned char key, int x, int y) {
 }
 
 int main(int argc, char **argv) {
-  
+
   CGSetLocalEventsSuppressionInterval(0.0);
 
   glutInit(&argc, argv);
@@ -222,7 +222,7 @@ int main(int argc, char **argv) {
   glutPassiveMotionFunc(passiveMotion);
   
   glutSetCursor (GLUT_CURSOR_NONE);
-//  glutWarpPointer(WINDOW_X / 2, WINDOW_Y / 2);
+  glutWarpPointer(WINDOW_X / 2, WINDOW_Y / 2);
   
   glEnable(GL_TEXTURE_2D);
   glEnable(GL_DEPTH_TEST); 
