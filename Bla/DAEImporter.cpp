@@ -23,7 +23,7 @@ Batch* DAEImporter::load_dae(const std::string& filename) {
   }
   
   Batch* batch = new Batch();
-  batch->initShaders();
+
   
   domCOLLADA::domSceneRef scene = root->getScene();
   domVisual_scene* vscene = daeSafeCast<domVisual_scene>(scene->getInstance_visual_scene()->getUrl().getElement());
@@ -114,7 +114,7 @@ Batch* DAEImporter::load_dae(const std::string& filename) {
               batch->addVertex(x, z , y * -1);
             }
           }
-          
+        
           if (std::string("NORMAL").compare(offset->getSemantic()) == 0) {
             domSource* normalSource = daeSafeCast<domSource>(offset->getSource().getElement());
             domFloat_arrayRef sourceDataArray = normalSource->getFloat_array();
@@ -132,8 +132,7 @@ Batch* DAEImporter::load_dae(const std::string& filename) {
             batch->addNormal(x, z, y * -1); 
           }
           
-          offsetIndex++;
-          
+          offsetIndex++;          
           if (offsetIndex == offsets.getCount()) {
             offsetIndex = 0;
           }
@@ -141,7 +140,7 @@ Batch* DAEImporter::load_dae(const std::string& filename) {
         
       }
     }
-    
+    batch->initShaders();
     batch->finalize();
   }
   

@@ -47,13 +47,13 @@ public:
     
     glm::mat4 projection = glm::perspective(75.0f, float(WINDOW_X) / float(WINDOW_Y), 0.5f, 100.f);
     
-    glm::mat4 eyeRotationY = glm::rotate(glm::mat4(1.0f), rotY, glm::vec3(1.0f, 0.0f, 0.0f));
+    glm::mat4 eyeRotationY = glm::rotate(projection, rotY, glm::vec3(1.0f, 0.0f, 0.0f));
     glm::mat4 eyeRotationX = glm::rotate(eyeRotationY, rotX, glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 eyeTranslation = glm::translate(eyeRotationX, glm::vec3(0.0f + movX, -2.0f + movY, -2.0f + movZ));
+
+    glm::mat4 translation = glm::translate(glm::mat4(1.0f), position_);
     
-    glm::mat4 translation = glm::translate(eyeTranslation, position_);
-    
-    batch_->render(translation, projection);
+    batch_->render(translation, eyeTranslation);
   }
   
 };
@@ -91,6 +91,7 @@ public:
       throw e;
     }
     
+    
     for (Object::const_iterator i = doc.Begin(); i != doc.End(); ++i) {
       const Array& jentities =  (*i).element;
       
@@ -101,14 +102,17 @@ public:
         Number positionY = Number((*jentity)["position"]["y"]);
         Number positionZ = Number((*jentity)["position"]["z"]);
         glm::vec3 position(positionX, positionY, positionZ);
-        
+
         Batch* batch = DAEImporter::load_dae(model);
-        batch->initShaders();
+
+//        batch->initShaders();
         
         Entity* entity = new Entity(batch, position);
         entities.push_back(entity);        
       }      
     }    
+    
+
   }
   
   void render() {
@@ -208,11 +212,11 @@ void keyboard(unsigned char key, int x, int y) {
 }
 
 int main(int argc, char **argv) {
-
+  
   CGSetLocalEventsSuppressionInterval(0.0);
 
   glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_RGBA | GLUT_SINGLE);
+  glutInitDisplayMode(GLUT_RGBA | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
   glutInitWindowSize(WINDOW_X, WINDOW_Y);
   glutCreateWindow("Grid");
   
@@ -225,7 +229,7 @@ int main(int argc, char **argv) {
   glutWarpPointer(WINDOW_X / 2, WINDOW_Y / 2);
   
   glEnable(GL_TEXTURE_2D);
-  glEnable(GL_DEPTH_TEST); 
+  glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
   
   glClearColor(0.39,0.584,0.923,1.0);

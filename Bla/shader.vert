@@ -11,7 +11,7 @@ varying vec4 vVaryingColor;
 
 void main(void) {  
   
-  vec3 vEyeNormal = normalize(normalMatrix * vNormal);
+  vec3 vEyeNormal = normalMatrix * vNormal;
   
   vec4 vPosition4 = mvMatrix * vVertex;
   vec3 vPosition3 = vPosition4.xyz / vPosition4.w;
@@ -20,8 +20,8 @@ void main(void) {
   
   float diffuseIntensity = max(0.0, dot(vEyeNormal, vLightDirection));
   
-  vVaryingColor.xyz = diffuseIntensity * diffuseColor.xyz;
-  vVaryingColor.a = 1.0;
+  vVaryingColor.rgb = diffuseIntensity * diffuseColor.rgb;
+  vVaryingColor.a = diffuseColor.a;
   
 //  vVaryingColor = diffuseColor;
   

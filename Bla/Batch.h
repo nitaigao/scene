@@ -21,8 +21,8 @@
 class Batch {
   
   enum {
-    VERTEX,
-    NORMAL
+    VERTEX = 0,
+    NORMAL = 2
   } BufferAttribs;
   
   std::vector<float> vertices;
@@ -50,8 +50,9 @@ public:
     indices++;
   }
   
+  int count;
+  
   inline void addNormal(float x, float y, float z) {
-    
     normals.push_back(x);
     normals.push_back(y);
     normals.push_back(z);    
@@ -70,8 +71,9 @@ public:
     
     GLuint vertexBufferObject;
     GLuint normalBufferObject;
-
     
+    std::clog << normals.size() * sizeof(float) << " " << vertices.size() * sizeof(float) << std::endl;
+
     glGenBuffers(1, &vertexBufferObject);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
@@ -79,8 +81,7 @@ public:
     glEnableVertexAttribArray(VERTEX);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
     glVertexAttribPointer(VERTEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    
-    
+        
     glGenBuffers(1, &normalBufferObject);
     glBindBuffer(GL_ARRAY_BUFFER, normalBufferObject);
     glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), &normals[0], GL_STATIC_DRAW);
@@ -96,10 +97,11 @@ public:
     
     GLuint shaderVert = glCreateShader(GL_VERTEX_SHADER);  
     std::string vertSrc = IO::readFile("shader.vert");  
-    std::clog << vertSrc << std::endl;
+
     GLchar *pVertSrc = (GLchar *)vertSrc.c_str();
     glShaderSource(shaderVert, 1, (const GLchar**)&pVertSrc, NULL);
     glCompileShader(shaderVert);
+    
     
     glGetShaderiv(shaderVert, GL_COMPILE_STATUS, &testVal);
     if (testVal == GL_FALSE) {
@@ -142,8 +144,7 @@ public:
     glUseProgram(shaderProg);
         
     glm::mat4 scale = glm::scale(modelViewMatrix, scale_);
-    glm::mat4 rotation = glm::rotate(scale, 0.0f, glm::vec3(0.0, 1.0, 0.0));
-    glm::mat4 mv(rotation);
+    glm::mat4 mv(scale);
     glm::mat4 mvp = projectionMatrix * mv;
     
     GLint uniformMVMatrix = glGetUniformLocation(shaderProg, "mvMatrix");
@@ -152,26 +153,21 @@ public:
     GLint  uniformLocation = glGetUniformLocation(shaderProg, "mvpMatrix");
     glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(mvp));
     
-    glm::mat3 normalMatrix = glm::inverse(glm::mat3(mv));
+    glm::mat3 normalMatrix = glm::inverseTranspose(glm::mat3(mv));
     GLint uniformNormalMatrix = glGetUniformLocation(shaderProg, "normalMatrix");
     glUniformMatrix3fv(uniformNormalMatrix, 1, GL_FALSE, glm::value_ptr(normalMatrix));
-    
+        
     GLint  uniformColor = glGetUniformLocation(shaderProg, "diffuseColor");
     glUniform4fv(uniformColor, 1, glm::value_ptr(color_));
     
     glm::vec4 lightPosition(100, 100, 100, 1.0f);
-    glm::vec4 eyeLightPosition = lightPosition * modelViewMatrix;
-    glm::vec3 transformedLightPosition(eyeLightPosition);
-    
     GLint uniformLightPosition = glGetUniformLocation(shaderProg, "vLightPosition");
-    glUniform3fv(uniformLightPosition, 1, glm::value_ptr(transformedLightPosition));
-    
+    glUniform3fv(uniformLightPosition, 1, glm::value_ptr(lightPosition));
     
     glBindVertexArrayAPPLE(vertexArrayObject);
     glDrawArrays(GL_TRIANGLES, 0, indices);
     glDisableClientState(GL_VERTEX_ARRAY);    
   }
-  
 };
 
 #endif
