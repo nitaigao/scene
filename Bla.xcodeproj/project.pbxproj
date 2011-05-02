@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4C3B13B3136E927C00DEDB35 /* box.dae in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4C3B13B1136E927000DEDB35 /* box.dae */; };
+		4C3B13B4136E927C00DEDB35 /* court.dae in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4C3B13B2136E927000DEDB35 /* court.dae */; };
+		4C3B13B6136E95F300DEDB35 /* scene.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4C3B13B5136E95DF00DEDB35 /* scene.json */; };
 		4C59A93C136B4A6C00C4F13D /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C59A93B136B4A6C00C4F13D /* GLUT.framework */; };
 		4C59A93E136B4A8900C4F13D /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C59A93D136B4A8900C4F13D /* OpenGL.framework */; };
 		4C59AA19136B4C7200C4F13D /* shader.frag in Sources */ = {isa = PBXBuildFile; fileRef = 4C59AA17136B4C7200C4F13D /* shader.frag */; };
@@ -26,6 +29,9 @@
 			dstPath = "";
 			dstSubfolderSpec = 6;
 			files = (
+				4C3B13B6136E95F300DEDB35 /* scene.json in CopyFiles */,
+				4C3B13B3136E927C00DEDB35 /* box.dae in CopyFiles */,
+				4C3B13B4136E927C00DEDB35 /* court.dae in CopyFiles */,
 				4C59AA1F136B4D7D00C4F13D /* shader.frag in CopyFiles */,
 				4C59AA20136B4D7D00C4F13D /* shader.vert in CopyFiles */,
 			);
@@ -34,6 +40,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4C3B13AD136E855300DEDB35 /* IO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IO.h; sourceTree = "<group>"; };
+		4C3B13B1136E927000DEDB35 /* box.dae */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = box.dae; path = Bla/box.dae; sourceTree = "<group>"; };
+		4C3B13B2136E927000DEDB35 /* court.dae */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = court.dae; path = Bla/court.dae; sourceTree = "<group>"; };
+		4C3B13B5136E95DF00DEDB35 /* scene.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = scene.json; path = Bla/scene.json; sourceTree = "<group>"; };
 		4C3C297D136D65FF00DA1AD7 /* elements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = elements.h; sourceTree = "<group>"; };
 		4C3C297E136D65FF00DA1AD7 /* elements.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = elements.inl; sourceTree = "<group>"; };
 		4C3C297F136D65FF00DA1AD7 /* reader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = reader.h; sourceTree = "<group>"; };
@@ -41,7 +51,6 @@
 		4C3C2981136D65FF00DA1AD7 /* visitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = visitor.h; sourceTree = "<group>"; };
 		4C3C2982136D65FF00DA1AD7 /* writer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = writer.h; sourceTree = "<group>"; };
 		4C3C2983136D65FF00DA1AD7 /* writer.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = writer.inl; sourceTree = "<group>"; };
-		4C3C2984136D670200DA1AD7 /* scene.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = scene.json; path = Bla/scene.json; sourceTree = "<group>"; };
 		4C59A93B136B4A6C00C4F13D /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		4C59A93D136B4A8900C4F13D /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		4C59AA17136B4C7200C4F13D /* shader.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = shader.frag; path = Bla/shader.frag; sourceTree = "<group>"; };
@@ -88,9 +97,11 @@
 		4C59AA1E136B4D6500C4F13D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				4C3C2984136D670200DA1AD7 /* scene.json */,
+				4C3B13B1136E927000DEDB35 /* box.dae */,
+				4C3B13B2136E927000DEDB35 /* court.dae */,
 				4C59AA17136B4C7200C4F13D /* shader.frag */,
 				4C59AA18136B4C7200C4F13D /* shader.vert */,
+				4C3B13B5136E95DF00DEDB35 /* scene.json */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -126,6 +137,7 @@
 				4C8058AB136D45C2008CBAFE /* DAEImporter.h */,
 				4C8058AE136D4653008CBAFE /* Batch.cpp */,
 				4C8058AF136D4653008CBAFE /* Batch.h */,
+				4C3B13AD136E855300DEDB35 /* IO.h */,
 			);
 			path = Bla;
 			sourceTree = "<group>";

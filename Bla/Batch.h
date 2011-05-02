@@ -16,6 +16,8 @@
 #include "glm/gtc/matrix_inverse.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
+#include "IO.h"
+
 class Batch {
   
   enum {
@@ -88,23 +90,13 @@ public:
     glVertexAttribPointer(NORMAL, 3, GL_FLOAT, GL_FALSE, 0, 0);
   }
   
-  std::string readFile(const std::string& filename) {
-    std::ifstream ifs (filename.c_str(), std::ifstream::in );
-    std::stringstream output;
-    
-    while (ifs.good()) {
-      output << (char) ifs.get();
-    }
-    
-    return output.str();
-  }
-  
   void initShaders() {
     shaderProg = glCreateProgram();
     GLint testVal;
     
     GLuint shaderVert = glCreateShader(GL_VERTEX_SHADER);  
-    std::string vertSrc = readFile("shader.vert");  
+    std::string vertSrc = IO::readFile("shader.vert");  
+    std::clog << vertSrc << std::endl;
     GLchar *pVertSrc = (GLchar *)vertSrc.c_str();
     glShaderSource(shaderVert, 1, (const GLchar**)&pVertSrc, NULL);
     glCompileShader(shaderVert);
@@ -119,7 +111,7 @@ public:
     glAttachShader(shaderProg, shaderVert);
     
     GLuint shaderFrag = glCreateShader(GL_FRAGMENT_SHADER);  
-    std::string fragSrc = readFile("shader.frag");
+    std::string fragSrc = IO::readFile("shader.frag");
     GLchar *pFragSrc = (GLchar *)fragSrc.c_str();
     glShaderSource(shaderFrag, 1, (const GLchar**)&pFragSrc, NULL);
     glCompileShader(shaderFrag);

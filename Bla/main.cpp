@@ -7,6 +7,7 @@
 
 #include "Batch.h"
 #include "DAEImporter.h"
+#include "io.h"
 
 #define WINDOW_X 800
 #define WINDOW_Y 600
@@ -20,28 +21,100 @@ float movX;
 float rotX;
 float rotY;
 
-typedef std::vector<Batch*> BatchList;
-BatchList batches;
-
 #include <libjson/libjson.h>
 #include <libjson/Source/JSONDefs.h>
+#include "json/reader.h"
+#include "json/elements.h"
+#include "IO.h"
 
-class Scene {
+using namespace json;
+
+class Entity {
+  
+  Batch* batch_;
+  glm::vec3 position_;
   
 public:
   
-  void load(const std::string& path) {
-    
-    
-
-//    JSONNode n = libjson::parse(json);
-    
-    
+  Entity(Batch* batch, glm::vec3 position)
+  : batch_(batch)
+  , position_(position) {
     
   }
   
   void render() {
     
+    glm::mat4 projection = glm::perspective(75.0f, float(WINDOW_X) / float(WINDOW_Y), 0.5f, 100.f);
+    
+    glm::mat4 eyeRotationY = glm::rotate(glm::mat4(1.0f), rotY, glm::vec3(1.0f, 0.0f, 0.0f));
+    glm::mat4 eyeRotationX = glm::rotate(eyeRotationY, rotX, glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 eyeTranslation = glm::translate(eyeRotationX, glm::vec3(0.0f + movX, -2.0f + movY, -2.0f + movZ));
+    
+    glm::mat4 translation = glm::translate(eyeTranslation, position_);
+    
+    batch_->render(translation, projection);
+  }
+  
+};
+
+std::string replace(const std::string& str,const std::string &from,const std::string & to) {
+  std::string snew = str;
+  std::string::size_type pos = std::string::npos;
+  
+  if((pos = snew.find(from)) != std::string::npos) {
+    return snew.replace(pos, from.length(), to);
+  }
+
+  return snew;
+}
+class Scene {
+  
+  typedef std::vector<Entity*> EntityList;
+  EntityList entities;
+  
+public:
+  
+  void load(const std::string& path) {
+    
+    std::string jsonData = IO::readFile(path);
+    jsonData = replace(jsonData, "\xff", "");
+    std::stringstream stream(jsonData);
+    
+    Object doc;
+    
+    try {
+      Reader::Read(doc, stream);
+    }
+    catch (Exception e) {
+      std::clog << e.what() << std::endl;
+      throw e;
+    }
+    
+    for (Object::const_iterator i = doc.Begin(); i != doc.End(); ++i) {
+      const Array& jentities =  (*i).element;
+      
+      for(Array::const_iterator jentity = jentities.Begin(); jentity != jentities.End(); ++jentity) {
+       
+        std::string model = String((*jentity)["model"]);
+        Number positionX = Number((*jentity)["position"]["x"]);
+        Number positionY = Number((*jentity)["position"]["y"]);
+        Number positionZ = Number((*jentity)["position"]["z"]);
+        glm::vec3 position(positionX, positionY, positionZ);
+        
+        Batch* batch = DAEImporter::load_dae(model);
+        batch->initShaders();
+        
+        Entity* entity = new Entity(batch, position);
+        entities.push_back(entity);        
+      }      
+    }    
+  }
+  
+  void render() {
+    
+    for (EntityList::iterator i = entities.begin(); i != entities.end(); ++i) {
+      (*i)->render();
+    }
   };
   
 };
@@ -51,17 +124,8 @@ Scene scene;
 void render() { 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   
-  glm::mat4 projection = glm::perspective(75.0f, float(WINDOW_X) / float(WINDOW_Y), 0.5f, 100.f);
-  
-  glm::mat4 eyeRotationY = glm::rotate(glm::mat4(1.0f), rotY, glm::vec3(1.0f, 0.0f, 0.0f));
-  glm::mat4 eyeRotationX = glm::rotate(eyeRotationY, rotX, glm::vec3(0.0f, 1.0f, 0.0f));
-  glm::mat4 eyeTranslation = glm::translate(eyeRotationX, glm::vec3(0.0f + movX, -2.0f + movY, -2.0f + movZ));
-  
-  
-  for (BatchList::iterator i = batches.begin(); i != batches.end(); ++i) {
-    (*i)->render(eyeTranslation, projection);
-  }
-  
+  scene.render();
+    
   glutSwapBuffers();
   glutPostRedisplay();
 }
@@ -146,14 +210,7 @@ int main(int argc, char **argv) {
   
   glClearColor(0.39,0.584,0.923,1.0);
   
-  scene.load("scene.json");
-  
-  
-//  Batch* batch1 = DAEImporter::load_dae("/Users/NK/Desktop/court.dae");
-//  batches.push_back(batch1);
-//  
-//  Batch* batch2 = DAEImporter::load_dae("/Users/NK/Desktop/box.dae");
-//  batches.push_back(batch2);
+  scene.load("scene.json"); 
   
   glutMainLoop();
   
