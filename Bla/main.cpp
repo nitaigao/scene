@@ -22,8 +22,10 @@ float movX;
 float rotX;
 float rotY;
 
-#include <libjson/libjson.h>
-#include <libjson/Source/JSONDefs.h>
+glm::vec4 forward(0, 0, -1, 1.0f);
+glm::vec4 left(-1, 0, 0, 1.0f);
+glm::vec3 origin(0, -1, 0);
+
 #include "json/reader.h"
 #include "json/elements.h"
 #include "IO.h"
@@ -44,12 +46,15 @@ public:
   }
   
   void render() {
-    
+        
     glm::mat4 projection = glm::perspective(75.0f, float(WINDOW_X) / float(WINDOW_Y), 0.5f, 100.f);
     
     glm::mat4 eyeRotationY = glm::rotate(projection, rotY, glm::vec3(1.0f, 0.0f, 0.0f));
-    glm::mat4 eyeRotationX = glm::rotate(eyeRotationY, rotX, glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::mat4 eyeTranslation = glm::translate(eyeRotationX, glm::vec3(0.0f + movX, -2.0f + movY, -2.0f + movZ));
+    glm::mat4 eyeRotationX = glm::rotate(eyeRotationY, rotX, glm::vec3(0.0f, 1.0f, 0.0f));   
+        
+    glm::vec3 newOrigin = origin + glm::vec3(forward) + glm::vec3(left);
+    
+    glm::mat4 eyeTranslation = glm::translate(eyeRotationX, origin);
 
     glm::mat4 translation = glm::translate(glm::mat4(1.0f), position_);
     
@@ -68,6 +73,7 @@ std::string replace(const std::string& str,const std::string &from,const std::st
 
   return snew;
 }
+
 class Scene {
   
   typedef std::vector<Entity*> EntityList;
@@ -148,13 +154,24 @@ int lastX = 0;
 int lastY = 0;
 bool firstInputPass = true;
 
+float deg2rad(float degrees) {
+  return degrees * (3.141f / 180.0f);
+}
+
 void passiveMotion(int x, int y) {
   if (!firstInputPass) {
-    int xDelta = lastX - x;
-    int yDelta = lastY - y;
+    float xDelta = lastX - x;
+    float yDelta = lastY - y;
+    
+    float xAngle = xDelta * 0.1f;
+    float yAngle = yDelta * 0.1f;
 
-    rotX -= xDelta * 0.1f;
-    rotY -= yDelta * 0.1f;    
+    rotX -= xAngle;
+    rotY -= yAngle;
+    
+    glm::mat4 cameraRotated = glm::rotate(glm::mat4(1.0), -xAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+    forward = forward * cameraRotated;
+    left = left * cameraRotated;
   }
   
   lastX = x;
@@ -184,11 +201,15 @@ void reshape(int w, int h) {
 
 void keyboard(unsigned char key, int x, int y) {  
   if (key == 'w') {
-    movZ += 0.1f;
+    origin.x += forward.x * -0.1f;
+    origin.y += forward.y * -0.1f;
+    origin.z += forward.z * -0.1f;
   }
   
   if (key == 's') {
-    movZ -= 0.1f;
+    origin.x += forward.x * 0.1f;
+    origin.y += forward.y * 0.1f;
+    origin.z += forward.z * 0.1f;
   }
   
   
@@ -202,12 +223,16 @@ void keyboard(unsigned char key, int x, int y) {
   }
   
   if (key == 'a') {
-    movX += 0.1f;
+    origin.x += left.x * -0.1f;
+    origin.y += left.y * -0.1f;
+    origin.z += left.z * -0.1f;
   }
   
   
   if (key == 'd') {
-    movX -= 0.1f;
+    origin.x += left.x * 0.1f;
+    origin.y += left.y * 0.1f;
+    origin.z += left.z * 0.1f;
   }
 }
 
