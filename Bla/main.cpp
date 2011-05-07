@@ -10,6 +10,8 @@
 #include "DAEImporter.h"
 #include "io.h"
 
+#include <sys/time.h>
+
 #define WINDOW_X 1280
 #define WINDOW_Y 800
 
@@ -63,16 +65,33 @@ public:
   
 };
 
-std::string replace(const std::string& str,const std::string &from,const std::string & to) {
-  std::string snew = str;
-  std::string::size_type pos = std::string::npos;
-  
-  if((pos = snew.find(from)) != std::string::npos) {
-    return snew.replace(pos, from.length(), to);
-  }
+class string : public std::string {
 
-  return snew;
-}
+public:
+  
+  string (const std::string& other) 
+  : std::string(other) {
+    
+  }
+    
+  std::string replace(const std::string &from, const std::string & to) {
+    std::string snew = *this;
+    std::string::size_type pos = std::string::npos;
+    
+    if((pos = snew.find(from)) != std::string::npos) {
+      return snew.replace(pos, from.length(), to);
+    }
+    
+    return snew;
+  }  
+  
+  
+  bool operator== (const string& other) const {
+    return std::string(*this).compare(other) == 0;
+  }
+  
+
+};
 
 class Scene {
   
@@ -83,8 +102,8 @@ public:
   
   void load(const std::string& path) {
     
-    std::string jsonData = IO::readFile(path);
-    jsonData = replace(jsonData, "\xff", "");
+    string jsonData = IO::readFile(path);
+    jsonData = jsonData.replace("\xff", "");
     std::stringstream stream(jsonData);
     
     Object doc;
@@ -97,27 +116,69 @@ public:
       throw e;
     }
     
-    
     for (Object::const_iterator i = doc.Begin(); i != doc.End(); ++i) {
-      const Array& jentities =  (*i).element;
       
-      for(Array::const_iterator jentity = jentities.Begin(); jentity != jentities.End(); ++jentity) {
-       
-        std::string model = String((*jentity)["model"]);
-        Number positionX = Number((*jentity)["position"]["x"]);
-        Number positionY = Number((*jentity)["position"]["y"]);
-        Number positionZ = Number((*jentity)["position"]["z"]);
-        glm::vec3 position(positionX, positionY, positionZ);
+      string name = (*i).name;
 
-        Batch* batch = DAEImporter::load_dae(model);
-
-//        batch->initShaders();
+      if (name == "skybox") {
         
-        Entity* entity = new Entity(batch, position);
-        entities.push_back(entity);        
-      }      
-    }    
-    
+        const Object& skybox = (*i).element;
+        
+        String top = skybox["top"];
+        String left = skybox["left"];
+        String right = skybox["right"];
+        String front = skybox["front"];
+        String back = skybox["back"];
+        
+        const char* faces[5] = { top.Value().c_str(), left.Value().c_str(), right.Value().c_str(), front.Value().c_str(), back.Value().c_str() };
+        
+        GLenum cube[5] = { 
+          GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+          GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+          GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+          GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+          GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+        };
+        
+        
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); 
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); 
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        
+
+        GLbyte *pBytes; GLint iWidth, iHeight, iComponents; GLenum eFormat;
+        
+        for(int i = 0; i < 5; i++) { 
+          pBytes = gltLoadTGABits(faces[i], &iWidth, &iHeight, &iComponents, &eFormat); 
+          glTexImage2D(cube[i], 0, iComponents, iWidth, iHeight, 0, eFormat, GL_UNSIGNED_BYTE, pBytes);
+          free(pBytes); 
+        } 
+        glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+        
+      }
+      
+      if (name == "entities") {
+        
+        const Array& jentities =  (*i).element;
+        for(Array::const_iterator jentity = jentities.Begin(); jentity != jentities.End(); ++jentity) {
+         
+          std::string model = String((*jentity)["model"]);
+          Number positionX = Number((*jentity)["position"]["x"]);
+          Number positionY = Number((*jentity)["position"]["y"]);
+          Number positionZ = Number((*jentity)["position"]["z"]);
+          glm::vec3 position(positionX, positionY, positionZ);
+
+          Batch* batch = DAEImporter::load_dae(model);
+
+  //        batch->initShaders();
+          
+          Entity* entity = new Entity(batch, position);
+          entities.push_back(entity);        
+        }      
+      }    
+    }
 
   }
   
@@ -142,12 +203,23 @@ void render() {
   
 }
 
+float forwardVelocity;
+float leftVelocity;
+
 void update() {
-  //  gettimeofday(&_tend,0);
-  //  double t1 = (double)_tstart.tv_sec + (double)_tstart.tv_usec / 1000000;
-  //  double t2 = (double)_tend.tv_sec + (double)_tend.tv_usec / 1000000;
-  //  float deltaTime = float(t2-t1);
-  //  _tstart = _tend;
+  gettimeofday(&_tend,0);
+  double t1 = (double)_tstart.tv_sec + (double)_tstart.tv_usec / 1000000;
+  double t2 = (double)_tend.tv_sec + (double)_tend.tv_usec / 1000000;
+  float deltaTime = float(t2-t1);
+  _tstart = _tend;
+  
+  origin.x += (forward.x * forwardVelocity) * deltaTime;
+  origin.y += (forward.y * forwardVelocity) * deltaTime;
+  origin.z += (forward.z * forwardVelocity) * deltaTime;
+  
+  origin.x += (left.x * leftVelocity) * deltaTime;
+  origin.y += (left.y * leftVelocity) * deltaTime;
+  origin.z += (left.z * leftVelocity) * deltaTime;
 }
 
 int lastX = 0;
@@ -199,17 +271,33 @@ void reshape(int w, int h) {
   glViewport(0, 0, (GLsizei) w, (GLsizei) h);
 }
 
-void keyboard(unsigned char key, int x, int y) {  
+void keyboardUp(unsigned char key, int x, int y) {  
   if (key == 'w') {
-    origin.x += forward.x * -0.1f;
-    origin.y += forward.y * -0.1f;
-    origin.z += forward.z * -0.1f;
+    forwardVelocity = 0;
   }
   
-  if (key == 's') {
-    origin.x += forward.x * 0.1f;
-    origin.y += forward.y * 0.1f;
-    origin.z += forward.z * 0.1f;
+  if (key == 's') {    
+    forwardVelocity = 0;
+  }  
+  
+  if (key == 'a') {
+    leftVelocity = 0;
+  }
+  
+  
+  if (key == 'd') {
+    leftVelocity = 0;
+  }
+
+}
+
+void keyboard(unsigned char key, int x, int y) {  
+  if (key == 'w') {
+    forwardVelocity = -5.0f;
+  }
+  
+  if (key == 's') {    
+    forwardVelocity = 5.0f;
   }
   
   
@@ -223,16 +311,12 @@ void keyboard(unsigned char key, int x, int y) {
   }
   
   if (key == 'a') {
-    origin.x += left.x * -0.1f;
-    origin.y += left.y * -0.1f;
-    origin.z += left.z * -0.1f;
+    leftVelocity = -5.0f;
   }
   
   
   if (key == 'd') {
-    origin.x += left.x * 0.1f;
-    origin.y += left.y * 0.1f;
-    origin.z += left.z * 0.1f;
+    leftVelocity = 5.0f;
   }
 }
 
@@ -248,7 +332,9 @@ int main(int argc, char **argv) {
   glutReshapeFunc(reshape);
   glutDisplayFunc(render);
   glutKeyboardFunc(keyboard);
+  glutKeyboardUpFunc(keyboardUp);
   glutPassiveMotionFunc(passiveMotion);
+  glutIdleFunc(update);
   
   glutSetCursor (GLUT_CURSOR_NONE);
   glutWarpPointer(WINDOW_X / 2, WINDOW_Y / 2);
