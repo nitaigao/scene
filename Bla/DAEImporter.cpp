@@ -9,10 +9,10 @@
 #include "DAEImporter.h"
 
 #include <iostream>
-#include <Collada14Dom/dae.h>
-#include <Collada14Dom/dom/domNode.h>
-#include <Collada14Dom/dom/domProfile_COMMON.h>
-#include <Collada14Dom/dom/domCOLLADA.h>
+#include <dae.h>
+#include <dom/domNode.h>
+#include <dom/domProfile_COMMON.h>
+#include <dom/domCOLLADA.h>
 
 Batch* DAEImporter::load_dae(const std::string& filename) {
   DAE dae;
@@ -30,7 +30,7 @@ Batch* DAEImporter::load_dae(const std::string& filename) {
   
   domNode_Array nodeArray = vscene->getNode_array();
   
-  int nodeCount = nodeArray.getCount();
+  size_t nodeCount = nodeArray.getCount();
   
   for (int nodei = 0; nodei < nodeCount; nodei++) {
     domNodeRef node = nodeArray.get(nodei);
@@ -47,7 +47,7 @@ Batch* DAEImporter::load_dae(const std::string& filename) {
     
     domInstance_geometry_Array geometriesArray = node->getInstance_geometry_array();
     
-    int geometryCount = geometriesArray.getCount();
+    size_t geometryCount = geometriesArray.getCount();
     
     for (int geometryi = 0; geometryi < geometryCount; geometryi++) {
       domInstance_geometryRef instanceGeometry = geometriesArray.get(geometryi);
@@ -74,7 +74,7 @@ Batch* DAEImporter::load_dae(const std::string& filename) {
       
       domPolylist_Array polylistArray = mesh->getPolylist_array();
       
-      int polylistCount = polylistArray.getCount();
+      size_t polylistCount = polylistArray.getCount();
       for (int polylisti = 0; polylisti < polylistCount; polylisti++) {
         domPolylistRef polylist = polylistArray.get(polylisti);        
         
@@ -84,7 +84,7 @@ Batch* DAEImporter::load_dae(const std::string& filename) {
         
         
         int offsetIndex = 0;
-        int pcount = plist.getCount();
+        size_t pcount = plist.getCount();
         for (int pi = 0; pi < pcount; pi++) {
           
           domInputLocalOffsetRef offset = offsets.get(offsetIndex);
@@ -93,7 +93,7 @@ Batch* DAEImporter::load_dae(const std::string& filename) {
             domVertices* vertexSources = daeSafeCast<domVertices>(offset->getSource().getElement());
             domInputLocal_Array vertexSourceArray = vertexSources->getInput_array();
             
-            int vertexSourceCount = vertexSourceArray.getCount();
+            size_t vertexSourceCount = vertexSourceArray.getCount();
             
             for (int vertexSourcei = 0; vertexSourcei < vertexSourceCount; vertexSourcei++) {
               domInputLocalRef inputLocal = vertexSourceArray.get(vertexSourcei);
@@ -140,7 +140,8 @@ Batch* DAEImporter::load_dae(const std::string& filename) {
         
       }
     }
-    batch->initShaders();
+    
+    batch->initShaders("shader");
     batch->finalize();
   }
   

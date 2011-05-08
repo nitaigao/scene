@@ -72,8 +72,6 @@ public:
     GLuint vertexBufferObject;
     GLuint normalBufferObject;
     
-    std::clog << normals.size() * sizeof(float) << " " << vertices.size() * sizeof(float) << std::endl;
-
     glGenBuffers(1, &vertexBufferObject);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
@@ -91,12 +89,15 @@ public:
     glVertexAttribPointer(NORMAL, 3, GL_FLOAT, GL_FALSE, 0, 0);
   }
   
-  void initShaders() {
+  void initShaders(const std::string& name) {
+      
     shaderProg = glCreateProgram();
     GLint testVal;
     
     GLuint shaderVert = glCreateShader(GL_VERTEX_SHADER);  
-    std::string vertSrc = IO::readFile("shader.vert");  
+    std::stringstream vertName;
+    vertName << name << ".vert";
+    std::string vertSrc = IO::readFile(vertName.str().c_str());  
 
     GLchar *pVertSrc = (GLchar *)vertSrc.c_str();
     glShaderSource(shaderVert, 1, (const GLchar**)&pVertSrc, NULL);
@@ -113,7 +114,9 @@ public:
     glAttachShader(shaderProg, shaderVert);
     
     GLuint shaderFrag = glCreateShader(GL_FRAGMENT_SHADER);  
-    std::string fragSrc = IO::readFile("shader.frag");
+    std::stringstream fragName;
+    fragName << name << ".frag";
+    std::string fragSrc = IO::readFile(fragName.str().c_str());
     GLchar *pFragSrc = (GLchar *)fragSrc.c_str();
     glShaderSource(shaderFrag, 1, (const GLchar**)&pFragSrc, NULL);
     glCompileShader(shaderFrag);

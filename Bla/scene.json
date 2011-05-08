@@ -1,10 +1,11 @@
 {
     "skybox": {
-      "top": "sky_top.jpg",
-      "left": "sky_left.jpg",
-      "right": "sky_right.jpg",
-      "front": "sky_front.jpg",
-      "back": "sky_back.jpg"
+      "top": "sky_top.png",
+      "bottom": "sky_bottom.png",
+      "left": "sky_left.png",
+      "right": "sky_right.png",
+      "front": "sky_front.png",
+      "back": "sky_back.png"
     },
     "entities": [{
         "model": "court.dae",

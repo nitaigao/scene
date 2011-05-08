@@ -31,6 +31,7 @@ glm::vec3 origin(0, -1, 0);
 #include "json/reader.h"
 #include "json/elements.h"
 #include "IO.h"
+#include <FreeImage.h>
 
 using namespace json;
 
@@ -47,20 +48,10 @@ public:
     
   }
   
-  void render() {
-        
-    glm::mat4 projection = glm::perspective(75.0f, float(WINDOW_X) / float(WINDOW_Y), 0.5f, 100.f);
-    
-    glm::mat4 eyeRotationY = glm::rotate(projection, rotY, glm::vec3(1.0f, 0.0f, 0.0f));
-    glm::mat4 eyeRotationX = glm::rotate(eyeRotationY, rotX, glm::vec3(0.0f, 1.0f, 0.0f));   
-        
-    glm::vec3 newOrigin = origin + glm::vec3(forward) + glm::vec3(left);
-    
-    glm::mat4 eyeTranslation = glm::translate(eyeRotationX, origin);
-
+  void render(const glm::mat4& projection) {
     glm::mat4 translation = glm::translate(glm::mat4(1.0f), position_);
     
-    batch_->render(translation, eyeTranslation);
+    batch_->render(translation, projection);
   }
   
 };
@@ -93,10 +84,117 @@ public:
 
 };
 
+
+BYTE* loadImage(const std::string& path, unsigned int* width, unsigned int *height) {
+	
+	FREE_IMAGE_FORMAT fif = FreeImage_GetFileType(path.c_str(), 0);
+
+	if(fif == FIF_UNKNOWN) {
+		fif = FreeImage_GetFIFFromFilename(path.c_str());
+  }
+
+	if(fif == FIF_UNKNOWN) {
+    std::cerr << "failed to determine image format for " << path << std::endl;
+    return 0;
+ 
+  }  
+  FIBITMAP *dib = 0;
+	if(FreeImage_FIFSupportsReading(fif)) {
+		dib = FreeImage_Load(fif, path.c_str());
+  }
+	if(!dib) {
+    std::cerr << "failed to read image data from " << path << std::endl;
+    return 0;
+
+  }  
+  
+	BYTE* bits = FreeImage_GetBits(dib);
+	
+  *width = FreeImage_GetWidth(dib);
+	*height = FreeImage_GetHeight(dib);
+
+	if(bits == 0 || width == 0 || height == 0) {
+    std::cerr << "failed to get image dimensions for " << path << std::endl;
+		return 0;
+  }
+  
+//  FreeImage_Unload(dib);
+  
+  return bits;
+}
+
+class SkyBox {
+  
+  std::string top_;
+  std::string bottom_;
+  std::string left_;
+  std::string right_;
+  std::string front_;
+  std::string back_;
+  
+  Batch* batch_;
+  
+  GLuint textureId_;
+    
+public:
+  
+  SkyBox() : batch_(0) { };
+  
+  void setTop(const std::string& top) { top_ = top; };
+  void setBottom(const std::string& bottom) { bottom_ = bottom; };
+  void setLeft(const std::string& left) { left_ = left; };
+  void setRight(const std::string& right) { right_ = right; };
+  void setFront(const std::string& front) { front_ = front; };
+  void setBack(const std::string& back) { back_ = back; };
+  
+  void load() {
+    
+    static const int CUBE_SIZE = 6;
+    
+    const char* faces[CUBE_SIZE] = { top_.c_str(), bottom_.c_str(), left_.c_str(), right_.c_str(), front_.c_str(), back_.c_str() };
+    
+    GLenum cube[CUBE_SIZE] = { 
+      GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+      GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+      GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+      GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+      GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
+      GL_TEXTURE_CUBE_MAP_POSITIVE_Z
+    };
+
+    glGenTextures(1, &textureId_);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureId_);
+    
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); 
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); 
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    
+    for(int i = 0; i < CUBE_SIZE; i++) { 
+      unsigned int width, height;      
+      BYTE* bits = loadImage(faces[i], &width, &height);
+      glTexImage2D(cube[i], 0, GL_RGBA, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, bits);      
+    } 
+    
+    glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+    
+    batch_ = DAEImporter::load_dae("skybox.dae");
+    batch_->initShaders("skybox");
+  }
+  
+  void render(const glm::mat4& projection) {
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureId_);
+    batch_->render(glm::mat4(1.0f), projection);
+  }
+};
+
 class Scene {
   
   typedef std::vector<Entity*> EntityList;
   EntityList entities;
+  SkyBox skybox;
   
 public:
   
@@ -122,41 +220,16 @@ public:
 
       if (name == "skybox") {
         
-        const Object& skybox = (*i).element;
+        const Object& sb = (*i).element;
         
-        String top = skybox["top"];
-        String left = skybox["left"];
-        String right = skybox["right"];
-        String front = skybox["front"];
-        String back = skybox["back"];
+        skybox.setTop(String(sb["top"]));
+        skybox.setBottom(String(sb["bottom"]));
+        skybox.setLeft(String(sb["left"]));
+        skybox.setRight(String(sb["right"]));
+        skybox.setFront(String(sb["front"]));
+        skybox.setBack(String(sb["back"]));
         
-        const char* faces[5] = { top.Value().c_str(), left.Value().c_str(), right.Value().c_str(), front.Value().c_str(), back.Value().c_str() };
-        
-        GLenum cube[5] = { 
-          GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
-          GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
-          GL_TEXTURE_CUBE_MAP_POSITIVE_X,
-          GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
-          GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
-        };
-        
-        
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); 
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); 
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-        
-
-        GLbyte *pBytes; GLint iWidth, iHeight, iComponents; GLenum eFormat;
-        
-        for(int i = 0; i < 5; i++) { 
-          pBytes = gltLoadTGABits(faces[i], &iWidth, &iHeight, &iComponents, &eFormat); 
-          glTexImage2D(cube[i], 0, iComponents, iWidth, iHeight, 0, eFormat, GL_UNSIGNED_BYTE, pBytes);
-          free(pBytes); 
-        } 
-        glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
-        
+        skybox.load();
       }
       
       if (name == "entities") {
@@ -171,8 +244,6 @@ public:
           glm::vec3 position(positionX, positionY, positionZ);
 
           Batch* batch = DAEImporter::load_dae(model);
-
-  //        batch->initShaders();
           
           Entity* entity = new Entity(batch, position);
           entities.push_back(entity);        
@@ -183,9 +254,16 @@ public:
   }
   
   void render() {
+    glm::mat4 projection = glm::perspective(75.0f, float(WINDOW_X) / float(WINDOW_Y), 0.5f, 200.0f);
+    
+    glm::mat4 eyeRotationY = glm::rotate(projection, rotY, glm::vec3(1.0f, 0.0f, 0.0f));
+    glm::mat4 eyeRotationX = glm::rotate(eyeRotationY, rotX, glm::vec3(0.0f, 1.0f, 0.0f));           
+    glm::mat4 eyeTranslation = glm::translate(eyeRotationX, origin);
+
+    skybox.render(eyeRotationX);   
     
     for (EntityList::iterator i = entities.begin(); i != entities.end(); ++i) {
-      (*i)->render();
+      (*i)->render(eyeTranslation);
     }
   };
   
@@ -322,6 +400,7 @@ void keyboard(unsigned char key, int x, int y) {
 
 int main(int argc, char **argv) {
   
+
   CGSetLocalEventsSuppressionInterval(0.0);
 
   glutInit(&argc, argv);
@@ -344,10 +423,14 @@ int main(int argc, char **argv) {
   glEnable(GL_CULL_FACE);
   
   glClearColor(0.39,0.584,0.923,1.0);
+  
+  FreeImage_Initialise();
     
   scene.load("scene.json"); 
   
   glutMainLoop();
+  
+  FreeImage_DeInitialise();
   
   return 0;	
 }
