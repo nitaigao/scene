@@ -198,7 +198,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp -rf ${SOURCE_ROOT}/assets/compiled ${BUILT_PRODUCTS_DIR}";
+			shellScript = "cp -rf ${SOURCE_ROOT}/assets/compiled/* ${BUILT_PRODUCTS_DIR}";
 		};
 /* End PBXShellScriptBuildPhase section */
 

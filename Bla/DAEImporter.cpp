@@ -69,6 +69,14 @@ Batch* DAEImporter::load_dae(const std::string& filename) {
       
       batch->setDiffuse(diffuse[0], diffuse[1], diffuse[2], diffuse[3]);
       
+      domListOfFloats specular = profileCommon->getTechnique()->getPhong()->getSpecular()->getColor()->getValue();
+
+      batch->setSpecular(specular[0], specular[1], specular[2], specular[3]);
+      
+      domListOfFloats ambient = profileCommon->getTechnique()->getPhong()->getAmbient()->getColor()->getValue();
+      
+      batch->setAmbient(ambient[0], ambient[1], ambient[2], ambient[3]);
+      
       
       domMeshRef mesh = geometry->getMesh();
       

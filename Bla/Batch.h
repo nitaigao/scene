@@ -30,7 +30,9 @@ class Batch {
   int indices;
   
   glm::vec3 scale_;
-  glm::vec4 color_;
+  glm::vec4 diffuse_;
+  glm::vec4 specular_;
+  glm::vec4 ambient_;
   
   GLuint vertexArrayObject;
   GLuint shaderProg;
@@ -59,10 +61,24 @@ public:
   }
   
   inline void setDiffuse(float r, float g, float b, float a) {
-    color_.r = r;
-    color_.g = g;
-    color_.b = b;
-    color_.a = a;
+    diffuse_.r = r;
+    diffuse_.g = g;
+    diffuse_.b = b;
+    diffuse_.a = a;
+  }
+  
+  inline void setAmbient(float r, float g, float b, float a) {
+    ambient_.r = r;
+    ambient_.g = g;
+    ambient_.b = b;
+    ambient_.a = a;
+  }
+  
+  inline void setSpecular(float r, float g, float b, float a) { 
+    specular_.r = r;
+    specular_.g = g;
+    specular_.b = b;
+    specular_.a = a;    
   }
   
   void finalize() {
@@ -142,6 +158,8 @@ public:
       glDeleteShader(shaderFrag);
     }
   }
+  
+  float ups;
 
   void render(const glm::mat4& modelViewMatrix, const glm::mat4& projectionMatrix) {
     glUseProgram(shaderProg);
@@ -161,7 +179,14 @@ public:
     glUniformMatrix3fv(uniformNormalMatrix, 1, GL_FALSE, glm::value_ptr(normalMatrix));
         
     GLint  uniformColor = glGetUniformLocation(shaderProg, "diffuseColor");
-    glUniform4fv(uniformColor, 1, glm::value_ptr(color_));
+    glUniform4fv(uniformColor, 1, glm::value_ptr(diffuse_));
+    
+    GLint uniformSpecColor = glGetUniformLocation(shaderProg, "specularColor");
+    glUniform4fv(uniformSpecColor, 1, glm::value_ptr(specular_));
+    
+    GLint uniformAmbientColor = glGetUniformLocation(shaderProg, "ambientColor");
+    glUniform4fv(uniformAmbientColor, 1, glm::value_ptr(ambient_));
+
     
     glm::vec4 lightPosition(100, 100, 100, 1.0f);
     GLint uniformLightPosition = glGetUniformLocation(shaderProg, "vLightPosition");

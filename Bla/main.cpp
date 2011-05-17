@@ -17,15 +17,12 @@
 
 struct timeval _tstart, _tend;
 
-float movZ;
-float movY;
-float movX;
-
 float rotX;
 float rotY;
 
 glm::vec4 forward(0, 0, -1, 1.0f);
 glm::vec4 left(-1, 0, 0, 1.0f);
+glm::vec4 up(0, 1, 0, 1.0f);
 glm::vec3 origin(0, -1, 0);
 
 #include "json/reader.h"
@@ -282,6 +279,7 @@ void render() {
 }
 
 float forwardVelocity;
+float upVelocity;
 float leftVelocity;
 
 void update() {
@@ -298,6 +296,10 @@ void update() {
   origin.x += (left.x * leftVelocity) * deltaTime;
   origin.y += (left.y * leftVelocity) * deltaTime;
   origin.z += (left.z * leftVelocity) * deltaTime;
+  
+  origin.x += (up.x * upVelocity) * deltaTime;
+  origin.y += (up.y * upVelocity) * deltaTime;
+  origin.z += (up.z * upVelocity) * deltaTime;
 }
 
 int lastX = 0;
@@ -358,6 +360,16 @@ void keyboardUp(unsigned char key, int x, int y) {
     forwardVelocity = 0;
   }  
   
+  if (key == 'e') {
+    upVelocity = 0;;
+  }
+  
+  
+  if (key == 'q') {
+    upVelocity = 0;
+  }
+
+  
   if (key == 'a') {
     leftVelocity = 0;
   }
@@ -380,12 +392,12 @@ void keyboard(unsigned char key, int x, int y) {
   
   
   if (key == 'e') {
-    movY += 0.1f;
+    upVelocity = 5.0f;
   }
   
   
   if (key == 'q') {
-    movY -= 0.1f;
+    upVelocity = -5.0f;
   }
   
   if (key == 'a') {
