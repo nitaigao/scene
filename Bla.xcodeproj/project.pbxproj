@@ -12,6 +12,10 @@
 		4C1731631376A39200CD631E /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1731621376A39200CD631E /* libxml2.dylib */; };
 		4C8058AC136D45C2008CBAFE /* DAEImporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C8058AA136D45C2008CBAFE /* DAEImporter.cpp */; };
 		4C8058B0136D4653008CBAFE /* Batch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C8058AE136D4653008CBAFE /* Batch.cpp */; };
+		4C869DF41387DA6F000B6FED /* SkyBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C869DF21387DA6F000B6FED /* SkyBox.cpp */; };
+		4C869DFB1387DC83000B6FED /* Entity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C869DF91387DC82000B6FED /* Entity.cpp */; };
+		4C869DFF1387DCF5000B6FED /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C869DFD1387DCF4000B6FED /* Scene.cpp */; };
+		4C869E021387E96C000B6FED /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C869E001387E96B000B6FED /* Camera.cpp */; };
 		4CB113F5136AEBEF00612D7F /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CB113F4136AEBEF00612D7F /* main.cpp */; };
 		4CF19AAE1376A5CC0066CFA8 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CF19AAD1376A5CC0066CFA8 /* GLUT.framework */; };
 		4CF19AB01376A5D10066CFA8 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CF19AAF1376A5D10066CFA8 /* OpenGL.framework */; };
@@ -58,6 +62,16 @@
 		4C8058AB136D45C2008CBAFE /* DAEImporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DAEImporter.h; sourceTree = "<group>"; };
 		4C8058AE136D4653008CBAFE /* Batch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Batch.cpp; sourceTree = "<group>"; };
 		4C8058AF136D4653008CBAFE /* Batch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Batch.h; sourceTree = "<group>"; };
+		4C869DF21387DA6F000B6FED /* SkyBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyBox.cpp; sourceTree = "<group>"; };
+		4C869DF31387DA6F000B6FED /* SkyBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyBox.h; sourceTree = "<group>"; };
+		4C869DF71387DB30000B6FED /* Texture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Texture.h; sourceTree = "<group>"; };
+		4C869DF91387DC82000B6FED /* Entity.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Entity.cpp; sourceTree = "<group>"; };
+		4C869DFA1387DC83000B6FED /* Entity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Entity.h; sourceTree = "<group>"; };
+		4C869DFC1387DCC4000B6FED /* String.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = String.h; sourceTree = "<group>"; };
+		4C869DFD1387DCF4000B6FED /* Scene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Scene.cpp; sourceTree = "<group>"; };
+		4C869DFE1387DCF5000B6FED /* Scene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scene.h; sourceTree = "<group>"; };
+		4C869E001387E96B000B6FED /* Camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Camera.cpp; sourceTree = "<group>"; };
+		4C869E011387E96B000B6FED /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Camera.h; sourceTree = "<group>"; };
 		4CB113F0136AEBEF00612D7F /* Bla */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Bla; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CB113F4136AEBEF00612D7F /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		4CB113F6136AEBEF00612D7F /* Bla.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = Bla.1; sourceTree = "<group>"; };
@@ -138,6 +152,16 @@
 				4C8058AE136D4653008CBAFE /* Batch.cpp */,
 				4C8058AF136D4653008CBAFE /* Batch.h */,
 				4C3B13AD136E855300DEDB35 /* IO.h */,
+				4C869DF21387DA6F000B6FED /* SkyBox.cpp */,
+				4C869DF31387DA6F000B6FED /* SkyBox.h */,
+				4C869DF71387DB30000B6FED /* Texture.h */,
+				4C869DF91387DC82000B6FED /* Entity.cpp */,
+				4C869DFA1387DC83000B6FED /* Entity.h */,
+				4C869DFC1387DCC4000B6FED /* String.h */,
+				4C869DFD1387DCF4000B6FED /* Scene.cpp */,
+				4C869DFE1387DCF5000B6FED /* Scene.h */,
+				4C869E001387E96B000B6FED /* Camera.cpp */,
+				4C869E011387E96B000B6FED /* Camera.h */,
 			);
 			path = Bla;
 			sourceTree = "<group>";
@@ -210,6 +234,10 @@
 				4CB113F5136AEBEF00612D7F /* main.cpp in Sources */,
 				4C8058AC136D45C2008CBAFE /* DAEImporter.cpp in Sources */,
 				4C8058B0136D4653008CBAFE /* Batch.cpp in Sources */,
+				4C869DF41387DA6F000B6FED /* SkyBox.cpp in Sources */,
+				4C869DFB1387DC83000B6FED /* Entity.cpp in Sources */,
+				4C869DFF1387DCF5000B6FED /* Scene.cpp in Sources */,
+				4C869E021387E96C000B6FED /* Camera.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

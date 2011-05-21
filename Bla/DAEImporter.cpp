@@ -14,6 +14,7 @@
 #include <dom/domProfile_COMMON.h>
 #include <dom/domCOLLADA.h>
 
+
 Batch* DAEImporter::load_dae(const std::string& filename) {
   DAE dae;
   domCOLLADA* root = dae.open(filename.c_str());
@@ -23,7 +24,6 @@ Batch* DAEImporter::load_dae(const std::string& filename) {
   }
   
   Batch* batch = new Batch();
-
   
   domCOLLADA::domSceneRef scene = root->getScene();
   domVisual_scene* vscene = daeSafeCast<domVisual_scene>(scene->getInstance_visual_scene()->getUrl().getElement());
@@ -65,9 +65,45 @@ Batch* DAEImporter::load_dae(const std::string& filename) {
       
       domProfile_COMMON* profileCommon = daeSafeCast<domProfile_COMMON>(fxProfile);
       
-      domListOfFloats diffuse = profileCommon->getTechnique()->getPhong()->getDiffuse()->getColor()->getValue();
+      domCommon_color_or_texture_type_complexType::domTextureRef texture = profileCommon->getTechnique()->getPhong()->getDiffuse()->getTexture();
       
-      batch->setDiffuse(diffuse[0], diffuse[1], diffuse[2], diffuse[3]);
+      if (texture) {
+        std::string textureName = texture->getTexture();
+        std::string samplerName;
+        
+        domCommon_newparam_type_Array newParams = profileCommon->getNewparam_array();
+        size_t newParamsCount = newParams.getCount();
+        
+        for (int newParami = 0; newParami < newParamsCount; newParami++) {
+          domCommon_newparam_typeRef param = newParams.get(newParami);
+          
+          if (std::string(param->getSid()).compare(textureName) == 0) {
+            std::string samplerName = param->getSampler2D()->getSource()->getValue();
+          }
+          
+          if (std::string(param->getSid()).compare(samplerName) == 0) {
+            domFx_surface_init_from_common_Array initFroms = param->getSurface()->getFx_surface_init_common()->getInit_from_array();
+            
+            size_t initFromCount = initFroms.getCount();
+            
+            for (int initFromi = 0; initFromi < initFromCount; initFromi++) {
+              domFx_surface_init_from_commonRef initFromCommon = initFroms.get(initFromi);
+              domImage* image = daeSafeCast<domImage>(initFromCommon->getValue().getElement());
+              std::string textureName = image->getInit_from()->getValue().getURI();
+              
+            }
+          }
+        } 
+      }
+      
+      domCommon_color_or_texture_type_complexType::domColorRef diffuseColor = profileCommon->getTechnique()->getPhong()->getDiffuse()->getColor();
+      
+      if (diffuseColor) {
+      
+        domListOfFloats diffuse = diffuseColor->getValue();
+        
+        batch->setDiffuse(diffuse[0], diffuse[1], diffuse[2], diffuse[3]);
+      }
       
       domListOfFloats specular = profileCommon->getTechnique()->getPhong()->getSpecular()->getColor()->getValue();
 
@@ -76,7 +112,6 @@ Batch* DAEImporter::load_dae(const std::string& filename) {
       domListOfFloats ambient = profileCommon->getTechnique()->getPhong()->getAmbient()->getColor()->getValue();
       
       batch->setAmbient(ambient[0], ambient[1], ambient[2], ambient[3]);
-      
       
       domMeshRef mesh = geometry->getMesh();
       
@@ -140,6 +175,21 @@ Batch* DAEImporter::load_dae(const std::string& filename) {
             batch->addNormal(x, z, y * -1); 
           }
           
+          if (std::string("TEXCOORD").compare(offset->getSemantic()) == 0) {
+            domSource* source = daeSafeCast<domSource>(offset->getSource().getElement());
+            domFloat_arrayRef sourceDataArray = source->getFloat_array();
+            domListOfFloats sourceData = sourceDataArray->getValue();
+            
+            domUint p = plist.get(pi);
+            domFloat xIndex = p * 2;
+            domFloat yIndex = (p * 2) + 1;
+            
+            float x = sourceData.get(xIndex);
+            float y = sourceData.get(yIndex);
+            
+            batch->addTexel(x, y);             
+          }
+          
           offsetIndex++;          
           if (offsetIndex == offsets.getCount()) {
             offsetIndex = 0;
@@ -148,9 +198,6 @@ Batch* DAEImporter::load_dae(const std::string& filename) {
         
       }
     }
-    
-    batch->initShaders("shader");
-    batch->finalize();
   }
   
   return batch;

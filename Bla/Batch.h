@@ -22,11 +22,13 @@ class Batch {
   
   enum {
     VERTEX = 0,
-    NORMAL = 2
+    NORMAL = 2,
+    TEXTURE = 3
   } BufferAttribs;
   
   std::vector<float> vertices;
   std::vector<float> normals;
+  std::vector<float> texels_;
   int indices;
   
   glm::vec3 scale_;
@@ -52,12 +54,15 @@ public:
     indices++;
   }
   
-  int count;
-  
   inline void addNormal(float x, float y, float z) {
     normals.push_back(x);
     normals.push_back(y);
     normals.push_back(z);    
+  }
+  
+  inline void addTexel(float x, float y) {
+    texels_.push_back(x);
+    texels_.push_back(y);
   }
   
   inline void setDiffuse(float r, float g, float b, float a) {
@@ -86,7 +91,6 @@ public:
     glBindVertexArrayAPPLE(vertexArrayObject);
     
     GLuint vertexBufferObject;
-    GLuint normalBufferObject;
     
     glGenBuffers(1, &vertexBufferObject);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
@@ -95,6 +99,8 @@ public:
     glEnableVertexAttribArray(VERTEX);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
     glVertexAttribPointer(VERTEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    
+    GLuint normalBufferObject;
         
     glGenBuffers(1, &normalBufferObject);
     glBindBuffer(GL_ARRAY_BUFFER, normalBufferObject);
@@ -103,6 +109,16 @@ public:
     glEnableVertexAttribArray(NORMAL);
     glBindBuffer(GL_ARRAY_BUFFER, normalBufferObject);
     glVertexAttribPointer(NORMAL, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    
+    GLuint textureBufferObject;
+    
+    glGenBuffers(1, &textureBufferObject);
+    glBindBuffer(GL_ARRAY_BUFFER, textureBufferObject);
+    glBufferData(GL_ARRAY_BUFFER, texels_.size() * sizeof(float), &texels_[0], GL_STATIC_DRAW);
+    
+    glEnableVertexAttribArray(TEXTURE);
+    glBindBuffer(GL_ARRAY_BUFFER, textureBufferObject);
+    glVertexAttribPointer(TEXTURE, 2, GL_FLOAT, GL_FALSE, 0, 0);
   }
   
   void initShaders(const std::string& name) {
@@ -148,6 +164,7 @@ public:
     
     glBindAttribLocation(shaderProg, VERTEX, "vVertex");
     glBindAttribLocation(shaderProg, NORMAL, "vNormal");
+    glBindAttribLocation(shaderProg, TEXTURE, "vTexture");
     
     glLinkProgram(shaderProg);
     glGetShaderiv(shaderFrag, GL_LINK_STATUS, &testVal);
@@ -158,8 +175,6 @@ public:
       glDeleteShader(shaderFrag);
     }
   }
-  
-  float ups;
 
   void render(const glm::mat4& modelViewMatrix, const glm::mat4& projectionMatrix) {
     glUseProgram(shaderProg);
@@ -167,6 +182,11 @@ public:
     glm::mat4 scale = glm::scale(modelViewMatrix, scale_);
     glm::mat4 mv(scale);
     glm::mat4 mvp = projectionMatrix * mv;
+    
+//    glm::mat4 inverseCameraRotation = glm::inverse(rotation);
+//    GLint uniformInverseCamera = glGetUniformLocation(shaderProg, "mInverseCamera");
+//    glUniformMatrix4fv(uniformInverseCamera, 1, GL_FALSE, glm::value_ptr(inverseCameraRotation));
+
     
     GLint uniformMVMatrix = glGetUniformLocation(shaderProg, "mvMatrix");
     glUniformMatrix4fv(uniformMVMatrix, 1, GL_FALSE, glm::value_ptr(mv));
@@ -191,6 +211,8 @@ public:
     glm::vec4 lightPosition(100, 100, 100, 1.0f);
     GLint uniformLightPosition = glGetUniformLocation(shaderProg, "vLightPosition");
     glUniform3fv(uniformLightPosition, 1, glm::value_ptr(lightPosition));
+    
+    
     
     glBindVertexArrayAPPLE(vertexArrayObject);
     glDrawArrays(GL_TRIANGLES, 0, indices);

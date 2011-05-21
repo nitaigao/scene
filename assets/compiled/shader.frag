@@ -23,7 +23,4 @@ void main(void) {
     float fSpec = pow(spec, 128.0);
     gl_FragColor.rgb += vec3(fSpec, fSpec, fSpec);
   }
-  
-
 }
-
