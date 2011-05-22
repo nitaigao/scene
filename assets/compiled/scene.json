@@ -9,7 +9,7 @@
     },
     "entities": [{
         "model": "court.dae",
-        "shader": "shader",
+        "shader": "texture",
         "position": {
             "x": 0,
             "y": 0,

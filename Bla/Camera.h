@@ -54,7 +54,6 @@ public:
     glm::mat4 eyeRotationX = glm::rotate(eyeRotationY, rotX, glm::vec3(0.0f, 1.0f, 0.0f));      
     return eyeRotationX;
   }
-
   
   glm::mat4 modelView() {
     glm::mat4 rot = rotation();

@@ -5,19 +5,29 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.57.0 r36273M</authoring_tool>
     </contributor>
-    <created>2011-05-21T20:30:40</created>
-    <modified>2011-05-21T20:30:40</modified>
+    <created>2011-05-22T10:59:22</created>
+    <modified>2011-05-22T10:59:22</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
   <library_images>
-    <image id="user_image-999505429q" name="user_image-999505429q">
-      <init_from>user_image-999505429qxf.jpg</init_from>
+    <image id="court_png" name="court_png">
+      <init_from>court.png</init_from>
     </image>
   </library_images>
   <library_effects>
     <effect id="Material_001-effect">
       <profile_COMMON>
+        <newparam sid="court_png-surface">
+          <surface type="2D">
+            <init_from>court_png</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="court_png-sampler">
+          <sampler2D>
+            <source>court_png-surface</source>
+          </sampler2D>
+        </newparam>
         <technique sid="common">
           <phong>
             <emission>
@@ -27,7 +37,7 @@
               <color>0 0 0 1</color>
             </ambient>
             <diffuse>
-              <color>0.1003046 0.64 0.142537 1</color>
+              <texture texture="court_png-sampler" texcoord="UVTex"/>
             </diffuse>
             <specular>
               <color>0.5 0.5 0.5 1</color>

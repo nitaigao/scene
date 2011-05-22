@@ -60,7 +60,7 @@ public:
     
     for(int i = 0; i < CUBE_SIZE; i++) { 
       unsigned int width, height;      
-      BYTE* bits = Texture::loadImage(faces[i], &width, &height);
+      BYTE* bits = Texture::loadImage(faces[i], &width, &height);  
       glTexImage2D(cube[i], 0, GL_RGBA, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, bits);      
     } 
     

@@ -14,6 +14,37 @@
 #include <dom/domProfile_COMMON.h>
 #include <dom/domCOLLADA.h>
 
+void loadTextures(Batch* batch, domProfile_COMMON* profileCommon, std::string name) {
+  domCommon_newparam_type_Array newParams = profileCommon->getNewparam_array();
+  size_t newParamsCount = newParams.getCount();
+  
+  for (int newParami = 0; newParami < newParamsCount; newParami++) {
+    domCommon_newparam_typeRef param = newParams.get(newParami);
+    
+    if (std::string(param->getSid()).compare(name) == 0) {
+      if (param->getSampler2D()) {
+        std::string samplerName = param->getSampler2D()->getSource()->getValue();
+        loadTextures(batch, profileCommon, samplerName);        
+      }
+      
+      if (param->getSurface()) {
+        domFx_surface_init_from_common_Array initFroms = param->getSurface()->getFx_surface_init_common()->getInit_from_array();
+        
+        size_t initFromCount = initFroms.getCount();
+        
+        for (int initFromi = 0; initFromi < initFromCount; initFromi++) {
+          domFx_surface_init_from_commonRef initFromCommon = initFroms.get(initFromi);
+          domImage* image = daeSafeCast<domImage>(initFromCommon->getValue().getElement());
+          
+          std::string textureName = image->getInit_from()->getValue().getPath();
+          batch->setDiffuse(1.0f, 1.0f, 1.0f, 1.0f);
+          batch->setTexture(textureName);
+        }        
+      }
+    }    
+  }   
+}
+
 
 Batch* DAEImporter::load_dae(const std::string& filename) {
   DAE dae;
@@ -68,34 +99,9 @@ Batch* DAEImporter::load_dae(const std::string& filename) {
       domCommon_color_or_texture_type_complexType::domTextureRef texture = profileCommon->getTechnique()->getPhong()->getDiffuse()->getTexture();
       
       if (texture) {
-        std::string textureName = texture->getTexture();
-        std::string samplerName;
-        
-        domCommon_newparam_type_Array newParams = profileCommon->getNewparam_array();
-        size_t newParamsCount = newParams.getCount();
-        
-        for (int newParami = 0; newParami < newParamsCount; newParami++) {
-          domCommon_newparam_typeRef param = newParams.get(newParami);
-          
-          if (std::string(param->getSid()).compare(textureName) == 0) {
-            std::string samplerName = param->getSampler2D()->getSource()->getValue();
-          }
-          
-          if (std::string(param->getSid()).compare(samplerName) == 0) {
-            domFx_surface_init_from_common_Array initFroms = param->getSurface()->getFx_surface_init_common()->getInit_from_array();
-            
-            size_t initFromCount = initFroms.getCount();
-            
-            for (int initFromi = 0; initFromi < initFromCount; initFromi++) {
-              domFx_surface_init_from_commonRef initFromCommon = initFroms.get(initFromi);
-              domImage* image = daeSafeCast<domImage>(initFromCommon->getValue().getElement());
-              std::string textureName = image->getInit_from()->getValue().getURI();
-              
-            }
-          }
-        } 
+        loadTextures(batch, profileCommon, texture->getTexture());
       }
-      
+            
       domCommon_color_or_texture_type_complexType::domColorRef diffuseColor = profileCommon->getTechnique()->getPhong()->getDiffuse()->getColor();
       
       if (diffuseColor) {

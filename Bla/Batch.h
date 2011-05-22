@@ -17,6 +17,7 @@
 #include "glm/gtc/type_ptr.hpp"
 
 #include "IO.h"
+#include "Texture.h"
 
 class Batch {
   
@@ -39,6 +40,8 @@ class Batch {
   GLuint vertexArrayObject;
   GLuint shaderProg;
   
+  GLuint textureId_;
+  
 public:
   
   inline void setScale(float x, float y, float z) {
@@ -51,6 +54,7 @@ public:
     vertices.push_back(x);
     vertices.push_back(y);
     vertices.push_back(z);
+    std::clog << "x:" << x << " y:" << y << " z:" << z << std::endl;
     indices++;
   }
   
@@ -60,9 +64,10 @@ public:
     normals.push_back(z);    
   }
   
-  inline void addTexel(float x, float y) {
-    texels_.push_back(x);
-    texels_.push_back(y);
+  inline void addTexel(float s, float t) {
+    texels_.push_back(s);
+    texels_.push_back(t);
+    std::clog << "s:" << s << " t:" << t << std::endl;
   }
   
   inline void setDiffuse(float r, float g, float b, float a) {
@@ -84,6 +89,25 @@ public:
     specular_.g = g;
     specular_.b = b;
     specular_.a = a;    
+  }
+  
+  inline void setTexture(const std::string& path) {
+    glGenTextures(1, &textureId_);
+    glBindTexture(GL_TEXTURE_2D, textureId_);
+    
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST); 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    
+    unsigned int width, height;
+    
+    BYTE* bits = Texture::loadImage(path, &width, &height);
+    std::clog << "loaded texture: " << path << " w:" << width << " h:" << height << std::endl;
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, bits);
+    glGenerateMipmap(GL_TEXTURE_2D);    
   }
   
   void finalize() {
@@ -157,14 +181,14 @@ public:
     if (testVal == GL_FALSE) {
       char infoLog[1024];
       glGetShaderInfoLog(shaderFrag, 1024, NULL, infoLog);
-      std::clog << infoLog << std::endl;
+      std::clog << infoLog << std:: endl;
       glDeleteShader(shaderFrag);
     }
     glAttachShader(shaderProg, shaderFrag);
     
     glBindAttribLocation(shaderProg, VERTEX, "vVertex");
     glBindAttribLocation(shaderProg, NORMAL, "vNormal");
-    glBindAttribLocation(shaderProg, TEXTURE, "vTexture");
+    glBindAttribLocation(shaderProg, TEXTURE, "vTexCoords");
     
     glLinkProgram(shaderProg);
     glGetShaderiv(shaderFrag, GL_LINK_STATUS, &testVal);
@@ -177,7 +201,10 @@ public:
   }
 
   void render(const glm::mat4& modelViewMatrix, const glm::mat4& projectionMatrix) {
+        
     glUseProgram(shaderProg);
+    
+    glBindTexture(GL_TEXTURE_2D, textureId_);
         
     glm::mat4 scale = glm::scale(modelViewMatrix, scale_);
     glm::mat4 mv(scale);
@@ -186,7 +213,9 @@ public:
 //    glm::mat4 inverseCameraRotation = glm::inverse(rotation);
 //    GLint uniformInverseCamera = glGetUniformLocation(shaderProg, "mInverseCamera");
 //    glUniformMatrix4fv(uniformInverseCamera, 1, GL_FALSE, glm::value_ptr(inverseCameraRotation));
-
+    
+    GLint uniformColorMap = glGetUniformLocation(shaderProg, "colorMap");
+    glUniform1i(uniformColorMap, 0);
     
     GLint uniformMVMatrix = glGetUniformLocation(shaderProg, "mvMatrix");
     glUniformMatrix4fv(uniformMVMatrix, 1, GL_FALSE, glm::value_ptr(mv));
