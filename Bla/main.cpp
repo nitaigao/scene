@@ -1,33 +1,13 @@
-
-#include <vector>
-
 #include <GLUT/GLUT.h>
 #include <ApplicationServices/ApplicationServices.h>
-
-#include "glm/glm.hpp" // glm::vec3, glm::vec4, glm::ivec4, glm::mat4
-
-#include "Batch.h"
-#include "DAEImporter.h"
-#include "io.h"
-
-#include <sys/time.h>
 
 #define WINDOW_X 1280
 #define WINDOW_Y 800
 
+#include <sys/time.h>
 struct timeval _tstart, _tend;
 
-#include "json/reader.h"
-#include "json/elements.h"
-
-#include "IO.h"
-
-#include "SkyBox.h"
-#include "String.h"
 #include "Scene.h"
-
-using namespace json;
-
 #include "Camera.h"
 
 Scene scene;
@@ -35,12 +15,9 @@ Camera camera(WINDOW_X, WINDOW_Y);
 
 void render() { 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  
   scene.render(camera.modelView(), camera.rotation());
-    
   glutSwapBuffers();
   glutPostRedisplay();
-
 }
 
 float forwardVelocity;
@@ -60,10 +37,6 @@ void update() {
 int lastX = 0;
 int lastY = 0;
 bool firstInputPass = true;
-
-float deg2rad(float degrees) {
-  return degrees * (3.141f / 180.0f);
-}
 
 void passiveMotion(int x, int y) {
   if (!firstInputPass) {
@@ -181,12 +154,8 @@ int main(int argc, char **argv) {
   glutSetCursor (GLUT_CURSOR_NONE);
   glutWarpPointer(WINDOW_X / 2, WINDOW_Y / 2);
   
-  glEnable(GL_TEXTURE_2D);
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_CULL_FACE);
-  
-  glClearColor(0.39,0.584,0.923,1.0);
-  
+  scene.init();
+    
   FreeImage_Initialise();
   
   camera = Camera(WINDOW_X, WINDOW_Y);

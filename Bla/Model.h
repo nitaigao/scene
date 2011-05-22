@@ -6,6 +6,8 @@
 
 #include <deque>
 
+#include <OpenGL/OpenGL.h>
+
 class Batch;
 
 class Model {
@@ -13,8 +15,11 @@ class Model {
   typedef std::deque<Batch*> BatchList;
   
   BatchList batches_;
+  GLuint shader_;
   
 public:
+  
+  void initShaders(const std::string& name);
   
   void render(const glm::mat4& modelViewMatrix, const glm::mat4& projectionMatrix);
   

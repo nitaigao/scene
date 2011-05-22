@@ -6,26 +6,18 @@
 
 #include <dae.h>
 
-class DAEImporter {
-  
-public:
-  
-  static Model* load(const std::string& path);
-  
-};
-
 class DAEFile {
+  
+  DAE dae;
+  domCOLLADA* root;
   
 public:
   
   static DAEFile* fromFile(const std::string& path);  
   void load(const std::string& path);
-  
-  
+    
   Model* model();  
   
-  DAE dae;
-  domCOLLADA* root;
 };
 
 

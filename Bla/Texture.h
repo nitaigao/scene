@@ -5,9 +5,48 @@
 #include <string>
 #include <iostream>
 
+#include <OpenGL/OpenGL.h>
+
 class Texture {
   
+  GLuint textureId_;
+  GLint target_;
+  
 public:
+  
+  Texture()
+  : target_(GL_TEXTURE_2D) { };
+  
+  Texture(GLint target)
+  : target_(target) { };
+  
+  void init(GLint mag, GLint min, GLint wrapS, GLint wrapT) {
+    glGenTextures(1, &textureId_);
+    glBindTexture(target_, textureId_);
+    
+    glTexParameteri(target_, GL_TEXTURE_MAG_FILTER, mag); 
+    glTexParameteri(target_, GL_TEXTURE_MIN_FILTER, min); 
+    glTexParameteri(target_, GL_TEXTURE_WRAP_S, wrapS); 
+    glTexParameteri(target_, GL_TEXTURE_WRAP_T, wrapT); 
+    
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+  }
+  
+  void load(GLint target, const std::string& path) {
+    unsigned int width, height = 0;
+    BYTE* bits = 0;
+    
+    bits = Texture::loadImage(path.c_str(), &width, &height);  
+    glTexImage2D(target, 0, GL_RGBA, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, bits);
+  }
+  
+  void generateMipMap() {
+    glGenerateMipmap(target_);
+  }
+  
+  void bind() {
+    glBindTexture(target_, textureId_);
+  }
 
   static BYTE* loadImage(const std::string& path, unsigned int* width, unsigned int *height) {
     

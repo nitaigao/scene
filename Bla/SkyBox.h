@@ -6,7 +6,6 @@
 
 #include "Texture.h"
 
-#include "Batch.h"
 #include "DAEImporter.h"
 
 class SkyBox {
@@ -18,13 +17,12 @@ class SkyBox {
   std::string front_;
   std::string back_;
   
-  Batch* batch_;
-  
-  GLuint textureId_;
+  Model* model_;
+  Texture texture_;
   
 public:
   
-  SkyBox() : batch_(0) { };
+  SkyBox() : model_(0) { texture_ = Texture(GL_TEXTURE_CUBE_MAP); };
   
   void setTop(const std::string& top) { top_ = top; };
   void setBottom(const std::string& bottom) { bottom_ = bottom; };
@@ -34,48 +32,23 @@ public:
   void setBack(const std::string& back) { back_ = back; };
   
   void load() {
+    texture_.init(GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+    texture_.load(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, top_.c_str());
+    texture_.load(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, bottom_.c_str());
+    texture_.load(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, left_.c_str());
+    texture_.load(GL_TEXTURE_CUBE_MAP_POSITIVE_X, right_.c_str());
+    texture_.load(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, front_.c_str());
+    texture_.load(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, back_.c_str());
+        
+    texture_.generateMipMap();
     
-    static const int CUBE_SIZE = 6;
-    
-    const char* faces[CUBE_SIZE] = { top_.c_str(), bottom_.c_str(), left_.c_str(), right_.c_str(), front_.c_str(), back_.c_str() };
-    
-    GLenum cube[CUBE_SIZE] = { 
-      GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
-      GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
-      GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
-      GL_TEXTURE_CUBE_MAP_POSITIVE_X,
-      GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
-      GL_TEXTURE_CUBE_MAP_POSITIVE_Z
-    };
-    
-    glGenTextures(1, &textureId_);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, textureId_);
-    
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); 
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); 
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    
-    for(int i = 0; i < CUBE_SIZE; i++) { 
-      unsigned int width, height;      
-      BYTE* bits = Texture::loadImage(faces[i], &width, &height);  
-      glTexImage2D(cube[i], 0, GL_RGBA, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, bits);      
-    } 
-    
-    glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
-    
-//    Mesh* mesh = DAEImporter::load("skybox.dae")
-//    
-//    batch_ = DAEImporter::load("skybox.dae");
-//    batch_->initShaders("skybox");
-//    batch_->finalize();
+    model_ = DAEFile::fromFile("skybox.dae")->model();
+    model_->initShaders("skybox");
   }
   
   void render(const glm::mat4& projection) {
-//    glBindTexture(GL_TEXTURE_CUBE_MAP, textureId_);
-//    batch_->render(glm::mat4(1.0f), projection);//, glm::mat4(1.0f));
+    texture_.bind();    
+    model_->render(glm::mat4(1.0f), projection);//, glm::mat4(1.0f));
   }
 };
 

@@ -1,7 +1,7 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include <vector>
+#include <deque>
 #include "glm/glm.hpp" // glm::vec3, glm::vec4, glm::ivec4, glm::mat4
 
 #include "Entity.h"
@@ -15,7 +15,6 @@ using namespace json;
 
 #include "String.h"
 
-
 class Scene {
   
   typedef std::vector<Entity*> EntityList;
@@ -24,8 +23,15 @@ class Scene {
   
 public:
   
-  void load(const std::string& path) {
+  void init() {
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
     
+    glClearColor(0.39,0.584,0.923,1.0);
+  }
+  
+  void load(const std::string& path) {
     string jsonData = IO::readFile(path);
     jsonData = jsonData.replace("\xff", "");
     std::stringstream stream(jsonData);
@@ -45,7 +51,6 @@ public:
       string name = (*i).name;
       
       if (name == "skybox") {
-        
         const Object& sb = (*i).element;
         
         skybox.setTop(String(sb["top"]));
@@ -59,7 +64,6 @@ public:
       }
       
       if (name == "entities") {
-        
         const Array& jentities =  (*i).element;
         for(Array::const_iterator jentity = jentities.Begin(); jentity != jentities.End(); ++jentity) {
           
@@ -71,7 +75,9 @@ public:
           
           std::string shader = String((*jentity)["shader"]);
           
-          Model* model = DAEImporter::load(modelSrc);
+          DAEFile* file = DAEFile::fromFile(modelSrc);
+          Model* model = file->model();
+          model->initShaders(shader);
           
           Entity* entity = new Entity(model, position);
           entities.push_back(entity);
@@ -81,7 +87,7 @@ public:
   }
   
   void render(const glm::mat4& modelView, const glm::mat4& rotation) {    
-//    skybox.render(rotation);   
+    skybox.render(rotation);   
     
     for (EntityList::iterator i = entities.begin(); i != entities.end(); ++i) {
       (*i)->render(modelView);
