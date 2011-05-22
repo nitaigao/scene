@@ -2,16 +2,17 @@
 #define ENTITY_H
 
 #include "Batch.h"
+#include "Model.h"
 
 class Entity {
   
-  Batch* batch_;
+  Model* model_;
   glm::vec3 position_;
   
 public:
   
-  Entity(Batch* batch, glm::vec3 position)
-  : batch_(batch)
+  Entity(Model* model, glm::vec3 position)
+  : model_(model)
   , position_(position) {
     
   }
@@ -19,7 +20,7 @@ public:
   void render(const glm::mat4& projection) {
     glm::mat4 translation = glm::translate(glm::mat4(1.0f), position_);
     
-    batch_->render(translation, projection);
+    model_->render(translation, projection);
   }
   
 };

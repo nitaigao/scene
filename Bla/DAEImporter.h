@@ -2,14 +2,31 @@
 #define DAEIMPORTER_H
 
 #include <string>
-#include "Batch.h"
+#include "Model.h"
+
+#include <dae.h>
 
 class DAEImporter {
   
 public:
   
-  static Batch* load_dae(const std::string& path);
+  static Model* load(const std::string& path);
   
 };
+
+class DAEFile {
+  
+public:
+  
+  static DAEFile* fromFile(const std::string& path);  
+  void load(const std::string& path);
+  
+  
+  Model* model();  
+  
+  DAE dae;
+  domCOLLADA* root;
+};
+
 
 #endif

@@ -66,14 +66,16 @@ public:
     
     glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
     
-    batch_ = DAEImporter::load_dae("skybox.dae");
-    batch_->initShaders("skybox");
-    batch_->finalize();
+//    Mesh* mesh = DAEImporter::load("skybox.dae")
+//    
+//    batch_ = DAEImporter::load("skybox.dae");
+//    batch_->initShaders("skybox");
+//    batch_->finalize();
   }
   
   void render(const glm::mat4& projection) {
-    glBindTexture(GL_TEXTURE_CUBE_MAP, textureId_);
-    batch_->render(glm::mat4(1.0f), projection);//, glm::mat4(1.0f));
+//    glBindTexture(GL_TEXTURE_CUBE_MAP, textureId_);
+//    batch_->render(glm::mat4(1.0f), projection);//, glm::mat4(1.0f));
   }
 };
 

@@ -6,6 +6,7 @@
 
 #include "Entity.h"
 #include "SkyBox.h"
+#include "Model.h"
 
 #include "json/reader.h"
 #include "json/elements.h"
@@ -62,7 +63,7 @@ public:
         const Array& jentities =  (*i).element;
         for(Array::const_iterator jentity = jentities.Begin(); jentity != jentities.End(); ++jentity) {
           
-          std::string model = String((*jentity)["model"]);
+          std::string modelSrc = String((*jentity)["model"]);
           Number positionX = Number((*jentity)["position"]["x"]);
           Number positionY = Number((*jentity)["position"]["y"]);
           Number positionZ = Number((*jentity)["position"]["z"]);
@@ -70,19 +71,17 @@ public:
           
           std::string shader = String((*jentity)["shader"]);
           
-          Batch* batch = DAEImporter::load_dae(model);
-          batch->initShaders(shader);
-          batch->finalize();
+          Model* model = DAEImporter::load(modelSrc);
           
-          Entity* entity = new Entity(batch, position);
-          entities.push_back(entity);        
+          Entity* entity = new Entity(model, position);
+          entities.push_back(entity);
         }      
       }    
     }
   }
   
   void render(const glm::mat4& modelView, const glm::mat4& rotation) {    
-    skybox.render(rotation);   
+//    skybox.render(rotation);   
     
     for (EntityList::iterator i = entities.begin(); i != entities.end(); ++i) {
       (*i)->render(modelView);

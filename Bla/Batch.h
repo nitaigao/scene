@@ -27,8 +27,8 @@ class Batch {
     TEXTURE = 3
   } BufferAttribs;
   
-  std::vector<float> vertices;
-  std::vector<float> normals;
+  std::vector<float> vertices_;
+  std::vector<float> normals_;
   std::vector<float> texels_;
   int indices;
   
@@ -44,23 +44,23 @@ class Batch {
   
 public:
   
-  inline void setScale(float x, float y, float z) {
-    scale_.x = x;
-    scale_.y = y;
-    scale_.z = z;
+  inline void setScale(const glm::vec3& scale) {
+    scale_.x = scale.x;
+    scale_.y = scale.y;
+    scale_.z = scale.z;
   }
-  
+    
   inline void addVertex(float x, float y, float z) {
-    vertices.push_back(x);
-    vertices.push_back(y);
-    vertices.push_back(z);
+    vertices_.push_back(x);
+    vertices_.push_back(y);
+    vertices_.push_back(z);
     indices++;
   }
   
   inline void addNormal(float x, float y, float z) {
-    normals.push_back(x);
-    normals.push_back(y);
-    normals.push_back(z);    
+    normals_.push_back(x);
+    normals_.push_back(y);
+    normals_.push_back(z);    
   }
   
   inline void addTexel(float s, float t) {
@@ -115,7 +115,7 @@ public:
     
     glGenBuffers(1, &vertexBufferObject);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(float), &vertices_[0], GL_STATIC_DRAW);
     
     glEnableVertexAttribArray(VERTEX);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
@@ -125,7 +125,7 @@ public:
         
     glGenBuffers(1, &normalBufferObject);
     glBindBuffer(GL_ARRAY_BUFFER, normalBufferObject);
-    glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), &normals[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, normals_.size() * sizeof(float), &normals_[0], GL_STATIC_DRAW);
     
     glEnableVertexAttribArray(NORMAL);
     glBindBuffer(GL_ARRAY_BUFFER, normalBufferObject);
@@ -232,14 +232,11 @@ public:
     
     GLint uniformAmbientColor = glGetUniformLocation(shaderProg, "ambientColor");
     glUniform4fv(uniformAmbientColor, 1, glm::value_ptr(ambient_));
-
     
     glm::vec4 lightPosition(100, 100, 100, 1.0f);
     GLint uniformLightPosition = glGetUniformLocation(shaderProg, "vLightPosition");
     glUniform3fv(uniformLightPosition, 1, glm::value_ptr(lightPosition));
-    
-    
-    
+
     glBindVertexArrayAPPLE(vertexArrayObject);
     glDrawArrays(GL_TRIANGLES, 0, indices);
     glDisableClientState(GL_VERTEX_ARRAY);    
