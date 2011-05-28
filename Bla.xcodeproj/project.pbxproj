@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4C15D202139162A800C68A4C /* Physics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C15D200139162A800C68A4C /* Physics.cpp */; };
+		4C15D205139168C400C68A4C /* GLDebugDrawer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C15D203139168C400C68A4C /* GLDebugDrawer.cpp */; };
+		4C15D2081391692500C68A4C /* GLDebugFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C15D2061391692500C68A4C /* GLDebugFont.cpp */; };
 		4C1731601376A2A600CD631E /* libpcre.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C17315E1376A2A600CD631E /* libpcre.dylib */; };
 		4C1731611376A2A600CD631E /* libpcrecpp.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C17315F1376A2A600CD631E /* libpcrecpp.dylib */; };
 		4C1731631376A39200CD631E /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1731621376A39200CD631E /* libxml2.dylib */; };
@@ -53,6 +56,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4C15D200139162A800C68A4C /* Physics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Physics.cpp; sourceTree = "<group>"; };
+		4C15D201139162A800C68A4C /* Physics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Physics.h; sourceTree = "<group>"; };
+		4C15D203139168C400C68A4C /* GLDebugDrawer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GLDebugDrawer.cpp; sourceTree = "<group>"; };
+		4C15D204139168C400C68A4C /* GLDebugDrawer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLDebugDrawer.h; sourceTree = "<group>"; };
+		4C15D2061391692500C68A4C /* GLDebugFont.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GLDebugFont.cpp; sourceTree = "<group>"; };
+		4C15D2071391692500C68A4C /* GLDebugFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLDebugFont.h; sourceTree = "<group>"; };
 		4C17315E1376A2A600CD631E /* libpcre.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpcre.dylib; path = usr/lib/libpcre.dylib; sourceTree = SDKROOT; };
 		4C17315F1376A2A600CD631E /* libpcrecpp.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpcrecpp.dylib; path = usr/local/lib/libpcrecpp.dylib; sourceTree = SDKROOT; };
 		4C1731621376A39200CD631E /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
@@ -162,6 +171,10 @@
 		4CB113F3136AEBEF00612D7F /* Bla */ = {
 			isa = PBXGroup;
 			children = (
+				4C15D2061391692500C68A4C /* GLDebugFont.cpp */,
+				4C15D2071391692500C68A4C /* GLDebugFont.h */,
+				4C15D203139168C400C68A4C /* GLDebugDrawer.cpp */,
+				4C15D204139168C400C68A4C /* GLDebugDrawer.h */,
 				4CF144DE1389A86F00EE1477 /* collada */,
 				4C3C297C136D65FF00DA1AD7 /* json */,
 				4CB113F4136AEBEF00612D7F /* main.cpp */,
@@ -183,6 +196,8 @@
 				4CF144DB13891ED400EE1477 /* Model.h */,
 				4CF144DD13897BBE00EE1477 /* Types.h */,
 				4CF144EB1389B10E00EE1477 /* Texture.cpp */,
+				4C15D200139162A800C68A4C /* Physics.cpp */,
+				4C15D201139162A800C68A4C /* Physics.h */,
 			);
 			path = Bla;
 			sourceTree = "<group>";
@@ -282,6 +297,9 @@
 				4CF144E71389A97C00EE1477 /* DAETexture.cpp in Sources */,
 				4CF144EA1389A9B900EE1477 /* DAEMaterial.cpp in Sources */,
 				4CF144EC1389B10E00EE1477 /* Texture.cpp in Sources */,
+				4C15D202139162A800C68A4C /* Physics.cpp in Sources */,
+				4C15D205139168C400C68A4C /* GLDebugDrawer.cpp in Sources */,
+				4C15D2081391692500C68A4C /* GLDebugFont.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -331,6 +349,7 @@
 				HEADER_SEARCH_PATHS = (
 					/Library/Frameworks/Collada14Dom.framework/Headers,
 					/usr/local/include,
+					/usr/local/include/bullet,
 				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				OTHER_LDFLAGS = (
@@ -339,6 +358,9 @@
 					"-ldom",
 					"-lboost_filesystem-mt",
 					"-lboost_system-mt",
+					"-lBulletCollision",
+					"-lBulletDynamics",
+					"-lLinearMath",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -357,6 +379,7 @@
 				HEADER_SEARCH_PATHS = (
 					/Library/Frameworks/Collada14Dom.framework/Headers,
 					/usr/local/include,
+					/usr/local/include/bullet,
 				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				OTHER_LDFLAGS = (
@@ -365,6 +388,9 @@
 					"-ldom",
 					"-lboost_filesystem-mt",
 					"-lboost_system-mt",
+					"-lBulletCollision",
+					"-lBulletDynamics",
+					"-lLinearMath",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;

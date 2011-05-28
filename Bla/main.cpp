@@ -9,13 +9,16 @@ struct timeval _tstart, _tend;
 
 #include "Scene.h"
 #include "Camera.h"
+#include "Physics.h"
 
 Scene scene;
+Physics physics;
 Camera camera(WINDOW_X, WINDOW_Y);
 
 void render() { 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   scene.render(camera.modelView(), camera.rotation());
+  physics.draw_debug();
   glutSwapBuffers();
   glutPostRedisplay();
 }
@@ -32,6 +35,7 @@ void update() {
   _tstart = _tend;
   
   camera.update(forwardVelocity, leftVelocity, upVelocity, deltaTime);
+  physics.update(1.0f / 60.0f);
 }
 
 int lastX = 0;
@@ -162,10 +166,13 @@ int main(int argc, char **argv) {
   
   camera = Camera(WINDOW_X, WINDOW_Y);
 
-    
+  physics.init();
+  physics.create_box();
   scene.load("scene.json"); 
   
   glutMainLoop();
+  
+  physics.destroy();
   
   FreeImage_DeInitialise();
   
