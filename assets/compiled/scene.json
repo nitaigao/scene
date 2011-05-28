@@ -9,11 +9,29 @@
     },
     "entities": [{
         "model": "court.dae",
-        "shader": "texture",
+        "shader": "shader",
         "position": {
             "x": 0,
             "y": 0,
             "z": 0
+        }
+    },
+    {
+        "model": "hoop.dae",
+        "shader": "shader",
+        "position": {
+            "x": 0,
+            "y": 10,
+            "z": -43
+        }
+    },
+    {
+        "model": "hoop.dae",
+        "shader": "shader",
+        "position": {
+            "x": 0,
+            "y": 10,
+            "z": 43
         }
     },
     {

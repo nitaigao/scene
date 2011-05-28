@@ -11,10 +11,10 @@ class Camera {
   float rotX;
   float rotY;
   
-  glm::vec4 forward_;//(0, 0, -1, 1.0f);
-  glm::vec4 left_;//(-1, 0, 0, 1.0f);
-  glm::vec4 up_;//(0, 1, 0, 1.0f);
-  glm::vec3 origin_;//(0, -1, 0);
+  glm::vec4 forward_;
+  glm::vec4 left_;
+  glm::vec4 up_;
+  glm::vec3 origin_;
   
   float width_;
   float height_;

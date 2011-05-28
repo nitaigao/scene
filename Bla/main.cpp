@@ -105,32 +105,34 @@ void keyboardUp(unsigned char key, int x, int y) {
 
 }
 
+static const float MOVEMENT_VELOCITY = 8.0f;
+
 void keyboard(unsigned char key, int x, int y) {  
   if (key == 'w') {
-    forwardVelocity = -5.0f;
+    forwardVelocity = -MOVEMENT_VELOCITY;
   }
   
   if (key == 's') {    
-    forwardVelocity = 5.0f;
+    forwardVelocity = MOVEMENT_VELOCITY;
   }
   
   
   if (key == 'e') {
-    upVelocity = 5.0f;
+    upVelocity = MOVEMENT_VELOCITY;
   }
   
   
   if (key == 'q') {
-    upVelocity = -5.0f;
+    upVelocity = -MOVEMENT_VELOCITY;
   }
   
   if (key == 'a') {
-    leftVelocity = -5.0f;
+    leftVelocity = -MOVEMENT_VELOCITY;
   }
   
   
   if (key == 'd') {
-    leftVelocity = 5.0f;
+    leftVelocity = MOVEMENT_VELOCITY;
   }
 }
 
