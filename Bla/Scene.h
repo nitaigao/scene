@@ -28,62 +28,16 @@ public:
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     
+    FreeImage_Initialise();
+    
     glClearColor(0.39,0.584,0.923,1.0);
   }
   
+  void destroy() {
+    FreeImage_DeInitialise();
+  }
+  
   void load(const std::string& path) {
-    string jsonData = IO::readFile(path);
-    jsonData = jsonData.replace("\xff", "");
-    std::stringstream stream(jsonData);
-    
-    Object doc;
-    
-    try {
-      Reader::Read(doc, stream);
-    }
-    catch (Exception e) {
-      std::clog << e.what() << std::endl;
-      throw e;
-    }
-    
-    for (Object::const_iterator i = doc.Begin(); i != doc.End(); ++i) {
-      
-      string name = (*i).name;
-      
-      if (name == "skybox") {
-        const Object& sb = (*i).element;
-        
-        skybox.setTop(String(sb["top"]));
-        skybox.setBottom(String(sb["bottom"]));
-        skybox.setLeft(String(sb["left"]));
-        skybox.setRight(String(sb["right"]));
-        skybox.setFront(String(sb["front"]));
-        skybox.setBack(String(sb["back"]));
-        
-        skybox.load();
-      }
-      
-      if (name == "entities") {
-        const Array& jentities =  (*i).element;
-        for(Array::const_iterator jentity = jentities.Begin(); jentity != jentities.End(); ++jentity) {
-          
-          std::string modelSrc = String((*jentity)["model"]);
-          Number positionX = Number((*jentity)["position"]["x"]);
-          Number positionY = Number((*jentity)["position"]["y"]);
-          Number positionZ = Number((*jentity)["position"]["z"]);
-          glm::vec3 position(positionX, positionY, positionZ);
-          
-          std::string shader = String((*jentity)["shader"]);
-          
-          DAEFile* file = DAEFile::fromFile(modelSrc);
-          Model* model = file->model();
-          model->initShaders(shader);
-          
-          Entity* entity = new Entity(model, position);
-          entities.push_back(entity);
-        }      
-      }    
-    }
   }
   
   void render(const glm::mat4& modelView, const glm::mat4& rotation) {    

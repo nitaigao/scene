@@ -3,7 +3,10 @@
 
 #include "LinearMath/btIDebugDraw.h"
 
+#include "shader.h"
 
+class Camera;
+class Batch;
 
 class GLDebugDrawer : public btIDebugDraw
 {
@@ -32,6 +35,16 @@ public:
 	virtual void	setDebugMode(int debugMode);
 
 	virtual int		getDebugMode() const { return m_debugMode;}
+  
+  void init();
+  
+  inline void set_camera(Camera* camera) { camera_ = camera; };
+  
+private:
+  
+  Camera* camera_;
+  Batch* batch;
+  Shader shader;
 
 };
 

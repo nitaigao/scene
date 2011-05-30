@@ -4,6 +4,11 @@
 #include <bullet/btBulletDynamicsCommon.h>
 #include <bullet/btBulletCollisionCommon.h>
 
+#include "glm/glm.hpp"
+#include <string>
+
+class Camera;
+
 class Physics {
   
   btDynamicsWorld* world;
@@ -15,21 +20,21 @@ class Physics {
   
 public:
   
-  Physics() : world(0) 
-  {
-    
-    
-  }
+  Physics() : world(0) { }
   
   void init();
+  
+  static Physics* system();
   
   void destroy();
   
   void update(float deltaTime);
   
-  void draw_debug();
+  void draw_debug(Camera* camera);
   
-  void create_box();
+  void create_box(const glm::vec3& position, float mass);
+  
+  void create_mesh(const std::string& path, unsigned int label);
   
 };
 

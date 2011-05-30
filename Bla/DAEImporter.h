@@ -16,7 +16,7 @@ public:
   static DAEFile* fromFile(const std::string& path);  
   void load(const std::string& path);
     
-  Model* model();  
+  Model* model(unsigned int label);  
   
 };
 

@@ -24,11 +24,11 @@ void DAEFile::load(const std::string& path) {
   }
 }
 
-Model* DAEFile::model() {
+Model* DAEFile::model(unsigned int label) {
   domCOLLADA::domSceneRef scene = root->getScene();
   domVisual_scene* vscene = daeSafeCast<domVisual_scene>(scene->getInstance_visual_scene()->getUrl().getElement());
   
-  Model* model = new Model();
+  Model* model = new Model(label);
   domNode_Array nodeArray = vscene->getNode_array();
   size_t nodeCount = nodeArray.getCount();
   for (int nodei = 0; nodei < nodeCount; nodei++) {

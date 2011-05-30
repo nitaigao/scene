@@ -18,11 +18,13 @@
 
 #include "IO.h"
 #include "Texture.h"
+#include "shader.h"
 
 enum {
   VERTEX = 0,
   NORMAL = 2,
-  TEXTURE = 3
+  TEXTURE = 3,
+  COLOR = 4
 };
 
 class Batch {
@@ -31,7 +33,8 @@ class Batch {
   std::vector<float> vertices_;
   std::vector<float> normals_;
   std::vector<float> texels_;
-  int indices;
+  std::vector<float> colors_;
+  int indices_;
   
   glm::vec3 scale_;
   glm::vec4 diffuse_;
@@ -40,9 +43,17 @@ class Batch {
   
   GLuint vertexArrayObject;
   
+  GLuint vertex_buffer_object_;
+  GLuint normal_buffer_object_;
+  GLuint texture_buffer_object_;
+  GLuint color_buffer_object_;
+  
   GLuint textureId_;
   
 public:
+  
+  Batch() : indices_(0) { };
+  
   
   inline void setScale(const glm::vec3& scale) {
     scale_.x = scale.x;
@@ -54,7 +65,7 @@ public:
     vertices_.push_back(x);
     vertices_.push_back(y);
     vertices_.push_back(z);
-    indices++;
+    indices_++;
   }
   
   inline void addNormal(float x, float y, float z) {
@@ -66,6 +77,12 @@ public:
   inline void addTexel(float s, float t) {
     texels_.push_back(s);
     texels_.push_back(t);
+  }
+  
+  inline void addColor(float r, float g, float b) {
+    colors_.push_back(r);
+    colors_.push_back(g);
+    colors_.push_back(b);
   }
   
   inline void setDiffuse(float r, float g, float b, float a) {
@@ -107,82 +124,95 @@ public:
     glGenerateMipmap(GL_TEXTURE_2D);    
   }
   
+  void set_data() {
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object_);
+    glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(float), &vertices_[0], GL_DYNAMIC_DRAW);
+  
+    glBindBuffer(GL_ARRAY_BUFFER, normal_buffer_object_);
+    glBufferData(GL_ARRAY_BUFFER, normals_.size() * sizeof(float), &normals_[0], GL_DYNAMIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, texture_buffer_object_);
+    glBufferData(GL_ARRAY_BUFFER, texels_.size() * sizeof(float), &texels_[0], GL_DYNAMIC_DRAW);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, color_buffer_object_);
+    glBufferData(GL_ARRAY_BUFFER, colors_.size() * sizeof(float), &colors_[0], GL_DYNAMIC_DRAW);
+  }
+  
+  void flush_buffers() {
+    vertices_.clear();
+    normals_.clear();
+    texels_.clear();
+    colors_.clear();
+    indices_ = 0;
+  }
+  
   void finalize() {
     glGenVertexArraysAPPLE(1, &vertexArrayObject);
     glBindVertexArrayAPPLE(vertexArrayObject);
     
-    GLuint vertexBufferObject;
-    
-    glGenBuffers(1, &vertexBufferObject);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-    glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(float), &vertices_[0], GL_STATIC_DRAW);
+    glGenBuffers(1, &vertex_buffer_object_);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object_);
+    glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(float), &vertices_[0], GL_DYNAMIC_DRAW);
     
     glEnableVertexAttribArray(VERTEX);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object_);
     glVertexAttribPointer(VERTEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    
-    GLuint normalBufferObject;
-        
-    glGenBuffers(1, &normalBufferObject);
-    glBindBuffer(GL_ARRAY_BUFFER, normalBufferObject);
-    glBufferData(GL_ARRAY_BUFFER, normals_.size() * sizeof(float), &normals_[0], GL_STATIC_DRAW);
+  
+    glGenBuffers(1, &normal_buffer_object_);
+    glBindBuffer(GL_ARRAY_BUFFER, normal_buffer_object_);
+    glBufferData(GL_ARRAY_BUFFER, normals_.size() * sizeof(float), &normals_[0], GL_DYNAMIC_DRAW);
     
     glEnableVertexAttribArray(NORMAL);
-    glBindBuffer(GL_ARRAY_BUFFER, normalBufferObject);
+    glBindBuffer(GL_ARRAY_BUFFER, normal_buffer_object_);
     glVertexAttribPointer(NORMAL, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    
-    GLuint textureBufferObject;
-    
-    glGenBuffers(1, &textureBufferObject);
-    glBindBuffer(GL_ARRAY_BUFFER, textureBufferObject);
-    glBufferData(GL_ARRAY_BUFFER, texels_.size() * sizeof(float), &texels_[0], GL_STATIC_DRAW);
+      
+    glGenBuffers(1, &texture_buffer_object_);
+    glBindBuffer(GL_ARRAY_BUFFER, texture_buffer_object_);
+    glBufferData(GL_ARRAY_BUFFER, texels_.size() * sizeof(float), &texels_[0], GL_DYNAMIC_DRAW);
     
     glEnableVertexAttribArray(TEXTURE);
-    glBindBuffer(GL_ARRAY_BUFFER, textureBufferObject);
+    glBindBuffer(GL_ARRAY_BUFFER, texture_buffer_object_);
     glVertexAttribPointer(TEXTURE, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    
+    glGenBuffers(1, &color_buffer_object_);
+    glBindBuffer(GL_ARRAY_BUFFER, color_buffer_object_);
+    glBufferData(GL_ARRAY_BUFFER, colors_.size() * sizeof(float), &colors_[0], GL_DYNAMIC_DRAW);
+    
+    glEnableVertexAttribArray(COLOR);
+    glBindBuffer(GL_ARRAY_BUFFER, color_buffer_object_);
+    glVertexAttribPointer(COLOR, 4, GL_FLOAT, GL_FALSE, 0, 0);
   }
   
-  void render(GLuint shaderProg, const glm::mat4& modelViewMatrix, const glm::mat4& projectionMatrix) {
-        
+  void render(GLenum mode, Shader& shader, const glm::mat4& modelMatrix, const glm::mat4& projectionMatrix) {
+    
+    shader.use();
     glBindTexture(GL_TEXTURE_2D, textureId_);
-        
-    glm::mat4 scale = glm::scale(modelViewMatrix, scale_);
+    
+    glm::mat4 scale = glm::scale(modelMatrix, scale_);
     glm::mat4 mv(scale);
     glm::mat4 mvp = projectionMatrix * mv;
     
-//    glm::mat4 inverseCameraRotation = glm::inverse(rotation);
-//    GLint uniformInverseCamera = glGetUniformLocation(shaderProg, "mInverseCamera");
-//    glUniformMatrix4fv(uniformInverseCamera, 1, GL_FALSE, glm::value_ptr(inverseCameraRotation));
+    shader.set_uniform("colorMap", 0);
+    shader.set_uniform("mvMatrix", mv);
+    shader.set_uniform("mvpMatrix", mvp);
+    shader.set_uniform("diffuseColor", diffuse_);
+    shader.set_uniform("specularColor", specular_);
+    shader.set_uniform("ambientColor", ambient_);
     
-    GLint uniformColorMap = glGetUniformLocation(shaderProg, "colorMap");
-    glUniform1i(uniformColorMap, 0);
-    
-    GLint uniformMVMatrix = glGetUniformLocation(shaderProg, "mvMatrix");
-    glUniformMatrix4fv(uniformMVMatrix, 1, GL_FALSE, glm::value_ptr(mv));
-    
-    GLint  uniformLocation = glGetUniformLocation(shaderProg, "mvpMatrix");
-    glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(mvp));
+    glm::vec3 lightPosition(100, 100, 100);
+    shader.set_uniform("vLightPosition", lightPosition);
     
     glm::mat3 normalMatrix = glm::inverseTranspose(glm::mat3(mv));
-    GLint uniformNormalMatrix = glGetUniformLocation(shaderProg, "normalMatrix");
-    glUniformMatrix3fv(uniformNormalMatrix, 1, GL_FALSE, glm::value_ptr(normalMatrix));
+    shader.set_uniform("normalMatrix", normalMatrix);
         
-    GLint  uniformColor = glGetUniformLocation(shaderProg, "diffuseColor");
-    glUniform4fv(uniformColor, 1, glm::value_ptr(diffuse_));
-    
-    GLint uniformSpecColor = glGetUniformLocation(shaderProg, "specularColor");
-    glUniform4fv(uniformSpecColor, 1, glm::value_ptr(specular_));
-    
-    GLint uniformAmbientColor = glGetUniformLocation(shaderProg, "ambientColor");
-    glUniform4fv(uniformAmbientColor, 1, glm::value_ptr(ambient_));
-    
-    glm::vec4 lightPosition(100, 100, 100, 1.0f);
-    GLint uniformLightPosition = glGetUniformLocation(shaderProg, "vLightPosition");
-    glUniform3fv(uniformLightPosition, 1, glm::value_ptr(lightPosition));
-
+    glEnableClientState(GL_VERTEX_ARRAY);        
     glBindVertexArrayAPPLE(vertexArrayObject);
-    glDrawArrays(GL_TRIANGLES, 0, indices);
-    glDisableClientState(GL_VERTEX_ARRAY);    
+    glDrawArrays(mode, 0, indices_);
+    glDisableClientState(GL_VERTEX_ARRAY);        
+  }
+  
+  void render(Shader& shader, const glm::mat4& modelViewMatrix, const glm::mat4& projectionMatrix) {
+    render(GL_TRIANGLES, shader, modelViewMatrix, projectionMatrix);
   }
 };
 

@@ -50,6 +50,7 @@ public:
 
   static BYTE* loadImage(const std::string& path, unsigned int* width, unsigned int *height) {
     
+    FreeImage_Initialise();
     FREE_IMAGE_FORMAT fif = FreeImage_GetFileType(path.c_str(), 0);
     
     if(fif == FIF_UNKNOWN) {
@@ -82,6 +83,8 @@ public:
     }
     
     //  FreeImage_Unload(dib);
+    
+    FreeImage_DeInitialise();
     
     return bits;
   }

@@ -2,29 +2,47 @@
 #include "GLDebugDrawer.h"
 #include "GLDebugFont.h"
 #include <OpenGL/OpenGL.h>
+#include <iostream>
 
-
+#include "Batch.h"
+#include "Camera.h"
+#include "shader_pair.h"
 
 #include <stdio.h> //printf debugging
 GLDebugDrawer::GLDebugDrawer()
 :m_debugMode(0)
 {
-
+  batch = new Batch();
 }
 
-void	GLDebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btVector3& fromColor, const btVector3& toColor)
-{
-	glBegin(GL_LINES);
-		glColor3f(fromColor.getX(), fromColor.getY(), fromColor.getZ());
-		glVertex3d(from.getX(), from.getY(), from.getZ());
-		glColor3f(toColor.getX(), toColor.getY(), toColor.getZ());
-		glVertex3d(to.getX(), to.getY(), to.getZ());
-	glEnd();
+void GLDebugDrawer::init() {
+  batch->finalize();
+  
+  ShaderPair shader_pair("flat");  
+  shader.compile(shader_pair.vert(), shader_pair.frag());
+}
+
+void	GLDebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btVector3& fromColor, const btVector3& toColor) { 
+  batch->flush_buffers();
+
+  batch->addVertex(from.getX(), from.getY(), from.getZ());
+  batch->addNormal(0, 1, 0);
+  batch->addColor(fromColor.getX(), fromColor.getY(), fromColor.getZ());
+
+  batch->addVertex(to.getX(), to.getY(), to.getZ());
+  batch->addNormal(0, 1, 0);
+  batch->addColor(toColor.getX(), toColor.getY(), toColor.getZ());
+  
+  batch->setScale(glm::vec3(1.0f, 1.0f, 1.0f));
+  
+  batch->set_data();
+  
+  batch->render(GL_LINES, shader, camera_->viewProjection(), glm::mat4(1.0f));
 }
 
 void	GLDebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btVector3& color)
 {
-	drawLine(from,to,color,color);
+  drawLine(from, to, btVector3(1.0f, 0.0f, 0.0f), color);
 }
 
 void GLDebugDrawer::drawSphere (const btVector3& p, btScalar radius, const btVector3& color)

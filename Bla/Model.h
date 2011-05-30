@@ -8,6 +8,8 @@
 
 #include <OpenGL/OpenGL.h>
 
+#include "shader.h"
+
 class Batch;
 
 class Model {
@@ -15,15 +17,27 @@ class Model {
   typedef std::deque<Batch*> BatchList;
   
   BatchList batches_;
-  GLuint shader_;
+  Shader shader_;
   
 public:
   
+  Model(unsigned int label)
+  : label_(label) { };
+  
   void initShaders(const std::string& name);
   
-  void render(const glm::mat4& modelViewMatrix, const glm::mat4& projectionMatrix);
+  void render(const glm::mat4& projectionMatrix);
   
   void addBatch(Batch* batch);
+  
+  void set_position(const glm::vec3& position);
+  
+  unsigned int label();
+  
+private:
+  
+  unsigned int label_;
+  glm::vec3 position_;
 };
 
 #endif

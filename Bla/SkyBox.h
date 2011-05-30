@@ -42,13 +42,13 @@ public:
         
     texture_.generateMipMap();
     
-    model_ = DAEFile::fromFile("skybox.dae")->model();
-    model_->initShaders("skybox");
+//    model_ = DAEFile::fromFile("skybox.dae")->model();
+//    model_->initShaders("skybox");
   }
   
   void render(const glm::mat4& projection) {
     texture_.bind();    
-    model_->render(glm::mat4(1.0f), projection);//, glm::mat4(1.0f));
+//    model_->render(glm::mat4(1.0f), projection);//, glm::mat4(1.0f));
   }
 };
 
