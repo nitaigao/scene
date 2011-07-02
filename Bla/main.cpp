@@ -58,7 +58,10 @@ void keyboard(unsigned char key, int x, int y) {
 }
 
 void init_system(int argc, char **argv, int width, int height) {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   CGSetLocalEventsSuppressionInterval(0.0);
+#pragma GCC diagnostic pop
   
   glutInit(&argc, argv);
   
@@ -87,16 +90,13 @@ int main(int argc, char **argv) {
   CharacterManager::manager();
   EntitySystem::system();
   
-  
   Renderer::system()->init(WINDOW_X, WINDOW_Y);
   Physics::system()->init();
   
   EntitySystem::system()->load("scene.json");
   
-  
   Renderer::system()->reload();
   PhysicalManager::manager()->reload();
-  
   
   start_loop();
   
